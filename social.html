@@ -14,7 +14,7 @@
         body {
             background-color: #FFFFFF;
             color: #000000;
-            font-family: '微软雅黑', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
             line-height: 1.5;
         }
 
@@ -118,73 +118,90 @@
 
         .social-main {
             padding: 48px 0;
+            min-height: 60vh;
         }
 
-        .social-layout {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 32px;
-        }
-
-        @media (max-width: 768px) {
-            .social-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .post-card {
+        .welcome-card {
             background: #FFFFFF;
             border: 1px solid #EAEAEA;
             border-radius: 24px;
-            padding: 24px;
+            padding: 48px;
+            text-align: center;
         }
 
-        .post-card h3 {
+        .welcome-card h2 {
+            font-size: 32px;
             margin-bottom: 16px;
-            font-size: 20px;
         }
 
-        .post-card textarea {
-            width: 100%;
-            min-height: 120px;
-            padding: 12px;
-            border: 1px solid #D0D0D0;
-            border-radius: 16px;
-            font-family: '微软雅黑', sans-serif;
-            font-size: 14px;
-            resize: vertical;
+        .welcome-card p {
+            color: #666;
+            margin-bottom: 24px;
         }
 
-        .image-upload {
-            margin: 16px 0;
-        }
-
-        .upload-label {
-            display: inline-block;
-            padding: 8px 16px;
-            background: #F5F5F5;
-            border-radius: 48px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        #postImage {
+        .modal {
             display: none;
-        }
-
-        #imagePreview {
-            margin-top: 12px;
-            max-width: 200px;
-        }
-
-        #imagePreview img {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
             width: 100%;
-            border-radius: 12px;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
         }
 
-        .feed-section h3 {
-            margin-bottom: 20px;
-            font-size: 24px;
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 32px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 24px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 16px;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #D0D0D0;
+            border-radius: 48px;
+            font-size: 14px;
+            font-family: '微软雅黑', sans-serif;
+        }
+
+        .modal-content button {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 16px;
+        }
+
+        .modal-content p {
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .modal-content a {
+            color: #000;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
         }
 
         .posts-list {
@@ -297,53 +314,65 @@
             margin-right: 8px;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
+        .post-section {
+            margin-bottom: 32px;
         }
 
-        .modal-content {
-            background-color: #fff;
-            margin: 10% auto;
-            padding: 32px;
-            width: 90%;
-            max-width: 400px;
+        .post-card {
+            background: #FFFFFF;
+            border: 1px solid #EAEAEA;
             border-radius: 24px;
-            position: relative;
+            padding: 24px;
         }
 
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 16px;
-            font-size: 28px;
-            cursor: pointer;
-        }
-
-        .modal-content input {
+        .post-card textarea {
             width: 100%;
+            min-height: 120px;
             padding: 12px;
-            margin: 12px 0;
             border: 1px solid #D0D0D0;
+            border-radius: 16px;
+            font-family: '微软雅黑', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .image-upload {
+            margin: 16px 0;
+        }
+
+        .upload-label {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #F5F5F5;
             border-radius: 48px;
+            cursor: pointer;
             font-size: 14px;
         }
 
-        .modal-content button {
-            width: 100%;
-            margin-top: 12px;
+        #postImage {
+            display: none;
         }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #999;
+        #imagePreview {
+            margin-top: 12px;
+            max-width: 200px;
+        }
+
+        #imagePreview img {
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        .social-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .social-layout {
+                grid-template-columns: 1fr;
+            }
         }
 
         .footer {
@@ -356,424 +385,491 @@
             margin-top: 40px;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- 使用 unpkg 替代 cdn.jsdelivr.net，避免跟踪防护问题 -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/index.js"></script>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="navbar">
-                <a href="#" class="logo">ApexFit</a>
-                <ul class="nav-menu">
-                    <li><a href="#" id="nav-home">首页</a></li>
-                    <li><a href="#" id="nav-social" class="active">运动社区</a></li>
-                    <li><a href="#" id="nav-profile">个人中心</a></li>
-                </ul>
-                <div class="auth-buttons" id="authButtons">
-                    <button class="btn-outline-small" id="loginBtn">登录</button>
-                    <button class="btn-dark-small" id="registerBtn">注册</button>
-                </div>
-                <div class="user-info" id="userInfo" style="display:none;">
-                    <span id="usernameDisplay"></span>
-                    <button class="btn-outline-small" id="logoutBtn">退出</button>
-                </div>
-            </div>
-        </div>
-    </header>
 
-    <main class="social-main">
-        <div class="container">
-            <div class="social-layout">
-                <div class="post-section">
-                    <div class="post-card">
-                        <h3>发布动态</h3>
-                        <textarea id="postContent" placeholder="分享你的运动瞬间..." maxlength="500"></textarea>
-                        <div class="image-upload">
-                            <input type="file" id="postImage" accept="image/*">
-                            <label for="postImage" class="upload-label">📷 添加图片</label>
-                            <div id="imagePreview"></div>
-                        </div>
-                        <button class="btn-dark" id="publishBtn">发布 →</button>
-                    </div>
-                </div>
-
-                <div class="feed-section">
-                    <h3>最新动态</h3>
-                    <div id="postsList" class="posts-list">
-                        <div class="loading">加载中...</div>
-                    </div>
-                </div>
+<header class="header">
+    <div class="container">
+        <div class="navbar">
+            <a href="#" class="logo">ApexFit</a>
+            <ul class="nav-menu">
+                <li><a href="#" id="nav-home">首页</a></li>
+                <li><a href="#" id="nav-social" class="active">运动社区</a></li>
+                <li><a href="#" id="nav-profile">个人中心</a></li>
+            </ul>
+            <div class="auth-buttons" id="authButtons">
+                <button class="btn-outline-small" id="loginBtn">登录</button>
+                <button class="btn-dark-small" id="registerBtn">注册</button>
             </div>
-        </div>
-    </main>
-
-    <div id="authModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="loginForm">
-                <h3>登录</h3>
-                <input type="text" id="loginUsername" placeholder="用户名">
-                <input type="password" id="loginPassword" placeholder="密码">
-                <button class="btn-dark" id="doLoginBtn">登录</button>
-                <p>没有账号？<a href="#" id="switchToRegister">立即注册</a></p>
-            </div>
-            <div id="registerForm" style="display:none;">
-                <h3>注册</h3>
-                <input type="text" id="regUsername" placeholder="用户名">
-                <input type="password" id="regPassword" placeholder="密码">
-                <input type="password" id="regConfirmPassword" placeholder="确认密码">
-                <button class="btn-dark" id="doRegisterBtn">注册</button>
-                <p>已有账号？<a href="#" id="switchToLogin">返回登录</a></p>
+            <div class="user-info" id="userInfo" style="display:none;">
+                <span id="usernameDisplay"></span>
+                <button class="btn-outline-small" id="logoutBtn">退出</button>
             </div>
         </div>
     </div>
+</header>
 
-    <footer class="footer">
-        <div class="container">
-            <p>© 2025 ApexFit — 运动社区，分享你的进步</p>
+<main class="social-main">
+    <div class="container">
+        <div id="mainContent"></div>
+    </div>
+</main>
+
+<!-- 登录模态框 -->
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        
+        <div id="loginForm">
+            <h3>登录</h3>
+            <input type="text" id="loginUsername" placeholder="用户名">
+            <input type="password" id="loginPassword" placeholder="密码">
+            <button class="btn-dark" id="doLoginBtn">登录</button>
+            <p>没有账号？ <a id="switchToRegister">立即注册</a></p>
         </div>
-    </footer>
-
-    <script>
-        // ========== Supabase 配置 ==========
-        const SUPABASE_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        let currentUser = null;
+        <div id="registerForm" style="display:none;">
+            <h3>注册</h3>
+            <input type="text" id="regUsername" placeholder="用户名">
+            <input type="password" id="regPassword" placeholder="密码">
+            <input type="password" id="regConfirmPassword" placeholder="确认密码">
+            <button class="btn-dark" id="doRegisterBtn">注册</button>
+            <p>已有账号？ <a id="switchToLogin">返回登录</a></p>
+        </div>
+    </div>
+</div>
 
-        // ========== 辅助函数 ==========
-        function showModal() {
-            document.getElementById('authModal').style.display = 'block';
+<footer class="footer">
+    <div class="container">
+        <p>© 2025 ApexFit — 运动社区，分享你的进步</p>
+    </div>
+</footer>
+
+<script>
+    // ==================== Supabase 配置 ====================
+    const SB_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
+    
+    // 等待 Supabase 库加载完成
+    let supabaseClient = null;
+    
+    // 等待库加载
+    function initSupabase() {
+        if (window.supabase) {
+            supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
+            console.log('Supabase 初始化成功');
+            restoreSession();
+            renderMainContent();
+            return true;
+        } else {
+            console.log('等待 Supabase 加载...');
+            setTimeout(initSupabase, 100);
+            return false;
         }
-
-        function hideModal() {
+    }
+    
+    let currentUser = null;
+    
+    // ==================== 渲染主内容 ====================
+    function renderMainContent() {
+        const container = document.getElementById('mainContent');
+        if (currentUser) {
+            container.innerHTML = `
+                <div class="social-layout">
+                    <div class="post-section">
+                        <div class="post-card">
+                            <h3>发布动态</h3>
+                            <textarea id="postContent" placeholder="分享你的运动瞬间..." maxlength="500"></textarea>
+                            <div class="image-upload">
+                                <input type="file" id="postImage" accept="image/*">
+                                <label for="postImage" class="upload-label">📷 添加图片</label>
+                                <div id="imagePreview"></div>
+                            </div>
+                            <button class="btn-dark" id="publishBtn">发布 →</button>
+                        </div>
+                    </div>
+                    <div class="feed-section">
+                        <h3>最新动态</h3>
+                        <div id="postsList" class="posts-list">
+                            <div class="loading">加载中...</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            loadPosts();
+            bindPostEvents();
+        } else {
+            container.innerHTML = `
+                <div class="welcome-card">
+                    <h2>🏋️ 运动社区</h2>
+                    <p>登录后可以发布动态、分享运动瞬间、与其他运动爱好者交流</p>
+                    <button class="btn-dark" id="getStartedBtn">立即开始</button>
+                </div>
+            `;
+            const getStartedBtn = document.getElementById('getStartedBtn');
+            if (getStartedBtn) {
+                getStartedBtn.onclick = function() {
+                    document.getElementById('loginForm').style.display = 'block';
+                    document.getElementById('registerForm').style.display = 'none';
+                    document.getElementById('authModal').style.display = 'block';
+                };
+            }
+        }
+    }
+    
+    function bindPostEvents() {
+        // 发布按钮
+        const publishBtn = document.getElementById('publishBtn');
+        if (publishBtn) publishBtn.onclick = publishPost;
+        
+        // 图片预览
+        const postImage = document.getElementById('postImage');
+        if (postImage) {
+            postImage.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('imagePreview').innerHTML = `<img src="${event.target.result}" style="max-width:100%;border-radius:12px;">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+        }
+    }
+    
+    // ==================== 认证函数 ====================
+    async function handleRegister() {
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regConfirmPassword').value;
+        
+        if (!username) { alert('请输入用户名'); return; }
+        if (!password) { alert('请输入密码'); return; }
+        if (password !== confirm) { alert('两次密码不一致'); return; }
+        if (password.length < 6) { alert('密码至少6位'); return; }
+        
+        try {
+            const email = username + '@apexfit.local';
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: { data: { username: username } }
+            });
+            
+            if (error) throw error;
+            
+            currentUser = { id: data.user.id, username: username };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            alert('注册成功！');
             document.getElementById('authModal').style.display = 'none';
-        }
-
-        // ========== 认证函数 ==========
-        async function handleRegister() {
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const confirm = document.getElementById('regConfirmPassword').value;
-
-            if (!username || !password) {
-                alert('请填写用户名和密码');
-                return;
-            }
-            if (password !== confirm) {
-                alert('两次密码不一致');
-                return;
-            }
-            if (password.length < 6) {
-                alert('密码至少6位');
-                return;
-            }
-
-            try {
-                const email = username + '@apexfit.local';
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: { data: { username: username } }
-                });
-
-                if (error) throw new Error(error.message);
-
-                // 保存用户信息
-                currentUser = { id: data.user.id, username: username };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                
-                alert('注册成功！');
-                hideModal();
-                updateUI();
-                loadPosts();
-            } catch (err) {
-                alert('注册失败: ' + err.message);
-            }
-        }
-
-        async function handleLogin() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            if (!username || !password) {
-                alert('请填写用户名和密码');
-                return;
-            }
-
-            try {
-                const email = username + '@apexfit.local';
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (error) throw new Error('用户名或密码错误');
-
-                currentUser = { id: data.user.id, username: username };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                
-                alert('登录成功！');
-                hideModal();
-                updateUI();
-                loadPosts();
-            } catch (err) {
-                alert('登录失败: ' + err.message);
-            }
-        }
-
-        function handleLogout() {
-            supabase.auth.signOut();
-            currentUser = null;
-            localStorage.removeItem('currentUser');
             updateUI();
-            loadPosts();
+            renderMainContent();
+            
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regConfirmPassword').value = '';
+            
+        } catch (err) {
+            alert('注册失败: ' + err.message);
         }
-
-        function updateUI() {
-            const authBtns = document.getElementById('authButtons');
-            const userInfo = document.getElementById('userInfo');
-            const usernameSpan = document.getElementById('usernameDisplay');
-
-            if (currentUser) {
-                authBtns.style.display = 'none';
-                userInfo.style.display = 'flex';
-                usernameSpan.textContent = currentUser.username;
-            } else {
-                authBtns.style.display = 'flex';
-                userInfo.style.display = 'none';
-            }
-        }
-
-        // ========== 帖子函数 ==========
-        async function publishPost() {
-            if (!currentUser) {
-                alert('请先登录');
-                return;
-            }
-
-            const content = document.getElementById('postContent').value.trim();
-            const imageFile = document.getElementById('postImage').files[0];
-
-            if (!content && !imageFile) {
-                alert('请填写内容或添加图片');
-                return;
-            }
-
-            let imageBase64 = null;
-            if (imageFile) {
-                const reader = new FileReader();
-                imageBase64 = await new Promise((resolve) => {
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.readAsDataURL(imageFile);
-                });
-            }
-
-            const { error } = await supabase.from('posts').insert([{
-                content: content,
-                author: currentUser.username,
-                author_id: currentUser.id,
-                image: imageBase64,
-                likes: 0,
-                created_at: new Date().toISOString()
-            }]);
-
-            if (error) {
-                alert('发布失败: ' + error.message);
-            } else {
-                document.getElementById('postContent').value = '';
-                document.getElementById('postImage').value = '';
-                document.getElementById('imagePreview').innerHTML = '';
-                loadPosts();
-            }
-        }
-
-        async function loadPosts() {
-            const container = document.getElementById('postsList');
-            container.innerHTML = '<div class="loading">加载中...</div>';
-
-            const { data: posts, error } = await supabase
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-                container.innerHTML = '<div class="loading">加载失败</div>';
-                return;
-            }
-
-            if (!posts || posts.length === 0) {
-                container.innerHTML = '<div class="loading">暂无动态，快来发布第一条吧！</div>';
-                return;
-            }
-
-            container.innerHTML = '';
-            for (const post of posts) {
-                // 获取评论
-                const { data: comments } = await supabase
-                    .from('comments')
-                    .select('*')
-                    .eq('post_id', post.id)
-                    .order('created_at');
-
-                const timeStr = formatTime(new Date(post.created_at));
-                
-                const postDiv = document.createElement('div');
-                postDiv.className = 'post-item';
-                postDiv.innerHTML = `
-                    <div class="post-header">
-                        <span class="post-author">🏋️ ${escapeHtml(post.author)}</span>
-                        <span class="post-time">${timeStr}</span>
-                    </div>
-                    <div class="post-content">${escapeHtml(post.content || '')}</div>
-                    ${post.image ? `<img src="${post.image}" class="post-image">` : ''}
-                    <div class="post-actions">
-                        <button class="action-btn like-btn" data-id="${post.id}">❤️ ${post.likes || 0}</button>
-                        <button class="action-btn comment-btn" data-id="${post.id}">💬 ${comments?.length || 0}</button>
-                    </div>
-                    <div class="comments-section" id="comments-${post.id}" style="display:none;">
-                        <div class="comment-list">
-                            ${comments?.map(c => `<div class="comment-item"><span class="comment-author">${escapeHtml(c.author)}:</span> ${escapeHtml(c.content)}</div>`).join('')}
-                        </div>
-                        <div class="comment-input">
-                            <input type="text" id="comment-input-${post.id}" placeholder="写下评论...">
-                            <button onclick="addComment('${post.id}')">发送</button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(postDiv);
-            }
-
-            // 绑定点赞事件
-            document.querySelectorAll('.like-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    if (!currentUser) { alert('请先登录'); return; }
-                    const postId = btn.dataset.id;
-                    await supabase.rpc('increment_likes', { post_id: parseInt(postId) });
-                    loadPosts();
-                });
+    }
+    
+    async function handleLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!username) { alert('请输入用户名'); return; }
+        if (!password) { alert('请输入密码'); return; }
+        
+        try {
+            const email = username + '@apexfit.local';
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
             });
-
-            // 绑定评论展开
-            document.querySelectorAll('.comment-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const postId = btn.dataset.id;
-                    const div = document.getElementById(`comments-${postId}`);
-                    div.style.display = div.style.display === 'none' ? 'block' : 'none';
-                });
-            });
+            
+            if (error) throw error;
+            
+            currentUser = { id: data.user.id, username: username };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            alert('登录成功！');
+            document.getElementById('authModal').style.display = 'none';
+            updateUI();
+            renderMainContent();
+            
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            
+        } catch (err) {
+            alert('登录失败: ' + err.message);
         }
-
-        window.addComment = async function(postId) {
-            if (!currentUser) { alert('请先登录'); return; }
-            const input = document.getElementById(`comment-input-${postId}`);
-            const content = input.value.trim();
-            if (!content) return;
-
-            await supabase.from('comments').insert([{
-                post_id: parseInt(postId),
-                content: content,
-                author: currentUser.username,
-                author_id: currentUser.id,
-                created_at: new Date().toISOString()
-            }]);
-            input.value = '';
-            loadPosts();
-        };
-
-        function formatTime(date) {
-            const diff = Date.now() - date;
-            const minutes = Math.floor(diff / 60000);
-            if (minutes < 1) return '刚刚';
-            if (minutes < 60) return minutes + '分钟前';
-            if (minutes < 1440) return Math.floor(minutes / 60) + '小时前';
-            return Math.floor(minutes / 1440) + '天前';
+    }
+    
+    function handleLogout() {
+        supabaseClient.auth.signOut();
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        updateUI();
+        renderMainContent();
+        alert('已退出登录');
+    }
+    
+    function updateUI() {
+        const authButtons = document.getElementById('authButtons');
+        const userInfo = document.getElementById('userInfo');
+        const usernameDisplay = document.getElementById('usernameDisplay');
+        
+        if (currentUser) {
+            authButtons.style.display = 'none';
+            userInfo.style.display = 'flex';
+            usernameDisplay.textContent = currentUser.username;
+        } else {
+            authButtons.style.display = 'flex';
+            userInfo.style.display = 'none';
         }
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+    }
+    
+    async function restoreSession() {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) {
+            currentUser = JSON.parse(stored);
         }
-
-        // ========== 恢复登录状态 ==========
-        async function restoreSession() {
-            const stored = localStorage.getItem('currentUser');
-            if (stored) {
-                currentUser = JSON.parse(stored);
-            }
-            const { data: { session } } = await supabase.auth.getSession();
+        
+        if (supabaseClient) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) {
                 currentUser = null;
                 localStorage.removeItem('currentUser');
             }
-            updateUI();
         }
-
-        // ========== 图片预览 ==========
-        document.getElementById('postImage')?.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    document.getElementById('imagePreview').innerHTML = `<img src="${event.target.result}" style="max-width:100%;border-radius:12px;">`;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // ========== 事件绑定（关键！）==========
-        document.getElementById('loginBtn').onclick = () => {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-            showModal();
-        };
         
-        document.getElementById('registerBtn').onclick = () => {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-            showModal();
-        };
+        updateUI();
+    }
+    
+    // ==================== 帖子函数 ====================
+    async function publishPost() {
+        if (!currentUser) {
+            alert('请先登录');
+            return;
+        }
         
-        document.querySelector('.close').onclick = hideModal;
+        const content = document.getElementById('postContent').value.trim();
+        const imageFile = document.getElementById('postImage').files[0];
         
-        window.onclick = (e) => {
-            if (e.target === document.getElementById('authModal')) hideModal();
-        };
+        if (!content && !imageFile) {
+            alert('请填写内容或添加图片');
+            return;
+        }
         
-        document.getElementById('switchToRegister').onclick = (e) => {
-            e.preventDefault();
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-        };
+        let imageBase64 = null;
+        if (imageFile) {
+            const reader = new FileReader();
+            imageBase64 = await new Promise((resolve) => {
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(imageFile);
+            });
+        }
         
-        document.getElementById('switchToLogin').onclick = (e) => {
-            e.preventDefault();
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-        };
+        const { error } = await supabaseClient.from('posts').insert([{
+            content: content,
+            author: currentUser.username,
+            author_id: currentUser.id,
+            image: imageBase64,
+            likes: 0,
+            created_at: new Date().toISOString()
+        }]);
         
-        document.getElementById('doLoginBtn').onclick = handleLogin;
-        document.getElementById('doRegisterBtn').onclick = handleRegister;
-        document.getElementById('logoutBtn').onclick = handleLogout;
-        document.getElementById('publishBtn').onclick = publishPost;
-
-        // ========== 初始化 ==========
-        restoreSession();
-        loadPosts();
-
-        // 导航菜单
-        document.querySelectorAll('.nav-menu a').forEach(link => {
-            link.onclick = (e) => {
-                e.preventDefault();
-                if (link.id === 'nav-profile' && !currentUser) alert('请先登录');
+        if (error) {
+            alert('发布失败: ' + error.message);
+        } else {
+            document.getElementById('postContent').value = '';
+            document.getElementById('postImage').value = '';
+            document.getElementById('imagePreview').innerHTML = '';
+            loadPosts();
+        }
+    }
+    
+    async function loadPosts() {
+        const container = document.getElementById('postsList');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="loading">加载中...</div>';
+        
+        const { data: posts, error } = await supabaseClient
+            .from('posts')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error || !posts || posts.length === 0) {
+            container.innerHTML = '<div class="loading">暂无动态，快来发布第一条吧！</div>';
+            return;
+        }
+        
+        container.innerHTML = '';
+        for (const post of posts) {
+            const { data: comments } = await supabaseClient
+                .from('comments')
+                .select('*')
+                .eq('post_id', post.id)
+                .order('created_at');
+            
+            const timeStr = formatTime(new Date(post.created_at));
+            
+            const postDiv = document.createElement('div');
+            postDiv.className = 'post-item';
+            postDiv.innerHTML = `
+                <div class="post-header">
+                    <span class="post-author">🏋️ ${escapeHtml(post.author)}</span>
+                    <span class="post-time">${timeStr}</span>
+                </div>
+                <div class="post-content">${escapeHtml(post.content || '')}</div>
+                ${post.image ? `<img src="${post.image}" class="post-image">` : ''}
+                <div class="post-actions">
+                    <button class="action-btn like-btn" data-id="${post.id}">❤️ ${post.likes || 0}</button>
+                    <button class="action-btn comment-btn" data-id="${post.id}">💬 ${comments?.length || 0}</button>
+                </div>
+                <div class="comments-section" id="comments-${post.id}" style="display:none;">
+                    <div class="comment-list">
+                        ${comments?.map(c => `<div class="comment-item"><span class="comment-author">${escapeHtml(c.author)}:</span> ${escapeHtml(c.content)}</div>`).join('')}
+                    </div>
+                    <div class="comment-input">
+                        <input type="text" id="comment-input-${post.id}" placeholder="写下评论...">
+                        <button onclick="addComment('${post.id}')">发送</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(postDiv);
+        }
+        
+        // 绑定点赞
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.onclick = async () => {
+                if (!currentUser) { alert('请先登录'); return; }
+                const postId = btn.getAttribute('data-id');
+                await supabaseClient.rpc('increment_likes', { post_id: parseInt(postId) });
+                loadPosts();
             };
         });
-    </script>
+        
+        // 绑定评论展开
+        document.querySelectorAll('.comment-btn').forEach(btn => {
+            btn.onclick = () => {
+                const postId = btn.getAttribute('data-id');
+                const div = document.getElementById(`comments-${postId}`);
+                div.style.display = div.style.display === 'none' ? 'block' : 'none';
+            };
+        });
+    }
+    
+    window.addComment = async function(postId) {
+        if (!currentUser) { alert('请先登录'); return; }
+        const input = document.getElementById(`comment-input-${postId}`);
+        const content = input.value.trim();
+        if (!content) return;
+        
+        await supabaseClient.from('comments').insert([{
+            post_id: parseInt(postId),
+            content: content,
+            author: currentUser.username,
+            author_id: currentUser.id,
+            created_at: new Date().toISOString()
+        }]);
+        input.value = '';
+        loadPosts();
+    };
+    
+    function formatTime(date) {
+        const diff = Date.now() - date;
+        const minutes = Math.floor(diff / 60000);
+        if (minutes < 1) return '刚刚';
+        if (minutes < 60) return minutes + '分钟前';
+        if (minutes < 1440) return Math.floor(minutes / 60) + '小时前';
+        return Math.floor(minutes / 1440) + '天前';
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // ==================== 事件绑定 ====================
+    function bindAuthEvents() {
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const closeBtn = document.querySelector('.close');
+        const modal = document.getElementById('authModal');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const doLoginBtn = document.getElementById('doLoginBtn');
+        const doRegisterBtn = document.getElementById('doRegisterBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        if (loginBtn) {
+            loginBtn.onclick = function() {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+                modal.style.display = 'block';
+            };
+        }
+        
+        if (registerBtn) {
+            registerBtn.onclick = function() {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+                modal.style.display = 'block';
+            };
+        }
+        
+        if (closeBtn) closeBtn.onclick = function() { modal.style.display = 'none'; };
+        if (switchToRegister) switchToRegister.onclick = function(e) {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        };
+        if (switchToLogin) switchToLogin.onclick = function(e) {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        };
+        if (doLoginBtn) doLoginBtn.onclick = handleLogin;
+        if (doRegisterBtn) doRegisterBtn.onclick = handleRegister;
+        if (logoutBtn) logoutBtn.onclick = handleLogout;
+        
+        window.onclick = function(e) {
+            if (e.target === modal) modal.style.display = 'none';
+        };
+    }
+    
+    // 导航菜单
+    function bindNavEvents() {
+        const navHome = document.getElementById('nav-home');
+        const navProfile = document.getElementById('nav-profile');
+        
+        if (navHome) navHome.onclick = function(e) { e.preventDefault(); alert('首页正在建设中'); };
+        if (navProfile) {
+            navProfile.onclick = function(e) {
+                e.preventDefault();
+                if (currentUser) alert(`欢迎 ${currentUser.username}！个人中心即将上线`);
+                else alert('请先登录');
+            };
+        }
+    }
+    
+    // ==================== 初始化 ====================
+    initSupabase();
+    bindAuthEvents();
+    bindNavEvents();
+</script>
+
 </body>
 </html>

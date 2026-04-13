@@ -266,10 +266,6 @@
             gap: 6px;
         }
 
-        .liked {
-            color: #ff4444;
-        }
-
         .comments-section {
             margin-top: 12px;
             padding-top: 12px;
@@ -384,58 +380,7 @@
             color: #5A5A5A;
             margin-top: 40px;
         }
-        
-        .error-banner {
-            background: #FFF0F0;
-            border: 1px solid #FFCCCC;
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .error-banner button {
-            margin-top: 12px;
-        }
     </style>
-    <!-- 使用多个备用CDN -->
-    <script>
-        // 手动加载 Supabase，尝试多个CDN
-        function loadSupabase(cdnIndex) {
-            const cdns = [
-                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/index.js',
-                'https://unpkg.com/@supabase/supabase-js@2/dist/umd/index.js',
-                'https://cdn.skypack.dev/@supabase/supabase-js@2'
-            ];
-            
-            if (cdnIndex >= cdns.length) {
-                console.error('所有CDN都加载失败');
-                document.getElementById('mainContent').innerHTML = `
-                    <div class="error-banner">
-                        <h3>⚠️ 网络连接问题</h3>
-                        <p>无法加载 Supabase SDK，请检查网络连接后刷新页面重试。</p>
-                        <button class="btn-dark" onclick="location.reload()">刷新重试</button>
-                    </div>
-                `;
-                return;
-            }
-            
-            const script = document.createElement('script');
-            script.src = cdns[cdnIndex];
-            script.onload = function() {
-                console.log('Supabase SDK 加载成功:', cdns[cdnIndex]);
-                window.supabaseLoaded = true;
-                initApp();
-            };
-            script.onerror = function() {
-                console.log('加载失败，尝试下一个CDN:', cdns[cdnIndex]);
-                loadSupabase(cdnIndex + 1);
-            };
-            document.head.appendChild(script);
-        }
-        
-        // 启动加载
-        loadSupabase(0);
-    </script>
 </head>
 <body>
 
@@ -498,41 +443,58 @@
     </div>
 </footer>
 
-<script>
-    // ==================== Supabase 配置 ====================
-    const SB_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
-    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
+<script type="module">
+    // ==================== 使用 ES Module 导入 Supabase ====================
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
     
-    let supabaseClient = null;
+    // Supabase 配置
+    const SUPABASE_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
+    
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
     let currentUser = null;
-    let appInitialized = false;
     
-    // ==================== 初始化应用 ====================
-    function initApp() {
-        if (appInitialized) return;
-        if (!window.supabase) {
-            console.log('等待 Supabase...');
-            setTimeout(initApp, 200);
-            return;
-        }
-        
-        console.log('Supabase 已就绪，初始化应用...');
-        supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
-        appInitialized = true;
-        
-        restoreSession();
-        renderMainContent();
-        bindAuthEvents();
-        bindNavEvents();
+    console.log('Supabase 初始化成功');
+    
+    // ==================== DOM 元素 ====================
+    const mainContent = document.getElementById('mainContent');
+    const authModal = document.getElementById('authModal');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const closeBtn = document.querySelector('.close');
+    const doLoginBtn = document.getElementById('doLoginBtn');
+    const doRegisterBtn = document.getElementById('doRegisterBtn');
+    const switchToRegister = document.getElementById('switchToRegister');
+    const switchToLogin = document.getElementById('switchToLogin');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const authButtons = document.getElementById('authButtons');
+    const userInfo = document.getElementById('userInfo');
+    const usernameDisplay = document.getElementById('usernameDisplay');
+    
+    // ==================== UI 函数 ====================
+    function showModal() {
+        authModal.style.display = 'block';
     }
     
-    // ==================== 渲染主内容 ====================
-    function renderMainContent() {
-        const container = document.getElementById('mainContent');
-        if (!container) return;
-        
+    function hideModal() {
+        authModal.style.display = 'none';
+    }
+    
+    function updateUI() {
         if (currentUser) {
-            container.innerHTML = `
+            authButtons.style.display = 'none';
+            userInfo.style.display = 'flex';
+            usernameDisplay.textContent = currentUser.username;
+        } else {
+            authButtons.style.display = 'flex';
+            userInfo.style.display = 'none';
+        }
+    }
+    
+    function renderMainContent() {
+        if (currentUser) {
+            mainContent.innerHTML = `
                 <div class="social-layout">
                     <div class="post-section">
                         <div class="post-card">
@@ -557,7 +519,7 @@
             loadPosts();
             bindPostEvents();
         } else {
-            container.innerHTML = `
+            mainContent.innerHTML = `
                 <div class="welcome-card">
                     <h2>🏋️ 运动社区</h2>
                     <p>登录后可以发布动态、分享运动瞬间、与其他运动爱好者交流</p>
@@ -566,10 +528,10 @@
             `;
             const getStartedBtn = document.getElementById('getStartedBtn');
             if (getStartedBtn) {
-                getStartedBtn.onclick = function() {
+                getStartedBtn.onclick = () => {
                     document.getElementById('loginForm').style.display = 'block';
                     document.getElementById('registerForm').style.display = 'none';
-                    document.getElementById('authModal').style.display = 'block';
+                    showModal();
                 };
             }
         }
@@ -581,11 +543,11 @@
         
         const postImage = document.getElementById('postImage');
         if (postImage) {
-            postImage.onchange = function(e) {
+            postImage.onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function(event) {
+                    reader.onload = (event) => {
                         document.getElementById('imagePreview').innerHTML = `<img src="${event.target.result}" style="max-width:100%;border-radius:12px;">`;
                     };
                     reader.readAsDataURL(file);
@@ -607,7 +569,7 @@
         
         try {
             const email = username + '@apexfit.local';
-            const { data, error } = await supabaseClient.auth.signUp({
+            const { data, error } = await supabase.auth.signUp({
                 email: email,
                 password: password,
                 options: { data: { username: username } }
@@ -619,7 +581,7 @@
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             
             alert('注册成功！');
-            document.getElementById('authModal').style.display = 'none';
+            hideModal();
             updateUI();
             renderMainContent();
             
@@ -641,7 +603,7 @@
         
         try {
             const email = username + '@apexfit.local';
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email: email,
                 password: password
             });
@@ -652,7 +614,7 @@
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             
             alert('登录成功！');
-            document.getElementById('authModal').style.display = 'none';
+            hideModal();
             updateUI();
             renderMainContent();
             
@@ -665,27 +627,12 @@
     }
     
     function handleLogout() {
-        supabaseClient.auth.signOut();
+        supabase.auth.signOut();
         currentUser = null;
         localStorage.removeItem('currentUser');
         updateUI();
         renderMainContent();
         alert('已退出登录');
-    }
-    
-    function updateUI() {
-        const authButtons = document.getElementById('authButtons');
-        const userInfo = document.getElementById('userInfo');
-        const usernameDisplay = document.getElementById('usernameDisplay');
-        
-        if (currentUser) {
-            authButtons.style.display = 'none';
-            userInfo.style.display = 'flex';
-            usernameDisplay.textContent = currentUser.username;
-        } else {
-            authButtons.style.display = 'flex';
-            userInfo.style.display = 'none';
-        }
     }
     
     async function restoreSession() {
@@ -694,15 +641,14 @@
             currentUser = JSON.parse(stored);
         }
         
-        if (supabaseClient) {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) {
-                currentUser = null;
-                localStorage.removeItem('currentUser');
-            }
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
         }
         
         updateUI();
+        renderMainContent();
     }
     
     // ==================== 帖子函数 ====================
@@ -729,7 +675,7 @@
             });
         }
         
-        const { error } = await supabaseClient.from('posts').insert([{
+        const { error } = await supabase.from('posts').insert([{
             content: content,
             author: currentUser.username,
             author_id: currentUser.id,
@@ -754,7 +700,7 @@
         
         container.innerHTML = '<div class="loading">加载中...</div>';
         
-        const { data: posts, error } = await supabaseClient
+        const { data: posts, error } = await supabase
             .from('posts')
             .select('*')
             .order('created_at', { ascending: false });
@@ -766,7 +712,7 @@
         
         container.innerHTML = '';
         for (const post of posts) {
-            const { data: comments } = await supabaseClient
+            const { data: comments } = await supabase
                 .from('comments')
                 .select('*')
                 .eq('post_id', post.id)
@@ -793,7 +739,7 @@
                     </div>
                     <div class="comment-input">
                         <input type="text" id="comment-input-${post.id}" placeholder="写下评论...">
-                        <button onclick="window.addComment('${post.id}')">发送</button>
+                        <button class="submit-comment-btn" data-id="${post.id}">发送</button>
                     </div>
                 </div>
             `;
@@ -805,7 +751,7 @@
             btn.onclick = async () => {
                 if (!currentUser) { alert('请先登录'); return; }
                 const postId = btn.getAttribute('data-id');
-                await supabaseClient.rpc('increment_likes', { post_id: parseInt(postId) });
+                await supabase.rpc('increment_likes', { post_id: parseInt(postId) });
                 loadPosts();
             };
         });
@@ -818,15 +764,23 @@
                 div.style.display = div.style.display === 'none' ? 'block' : 'none';
             };
         });
+        
+        // 绑定评论提交
+        document.querySelectorAll('.submit-comment-btn').forEach(btn => {
+            btn.onclick = async () => {
+                const postId = btn.getAttribute('data-id');
+                await addComment(postId);
+            };
+        });
     }
     
-    window.addComment = async function(postId) {
+    async function addComment(postId) {
         if (!currentUser) { alert('请先登录'); return; }
         const input = document.getElementById(`comment-input-${postId}`);
         const content = input.value.trim();
         if (!content) return;
         
-        await supabaseClient.from('comments').insert([{
+        await supabase.from('comments').insert([{
             post_id: parseInt(postId),
             content: content,
             author: currentUser.username,
@@ -835,7 +789,7 @@
         }]);
         input.value = '';
         loadPosts();
-    };
+    }
     
     function formatTime(date) {
         const diff = Date.now() - date;
@@ -857,71 +811,59 @@
     }
     
     // ==================== 事件绑定 ====================
-    function bindAuthEvents() {
-        const loginBtn = document.getElementById('loginBtn');
-        const registerBtn = document.getElementById('registerBtn');
-        const closeBtn = document.querySelector('.close');
-        const modal = document.getElementById('authModal');
-        const switchToRegister = document.getElementById('switchToRegister');
-        const switchToLogin = document.getElementById('switchToLogin');
-        const doLoginBtn = document.getElementById('doLoginBtn');
-        const doRegisterBtn = document.getElementById('doRegisterBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        
-        if (loginBtn) {
-            loginBtn.onclick = function() {
-                document.getElementById('loginForm').style.display = 'block';
-                document.getElementById('registerForm').style.display = 'none';
-                modal.style.display = 'block';
-            };
-        }
-        
-        if (registerBtn) {
-            registerBtn.onclick = function() {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('registerForm').style.display = 'block';
-                modal.style.display = 'block';
-            };
-        }
-        
-        if (closeBtn) closeBtn.onclick = function() { modal.style.display = 'none'; };
-        if (switchToRegister) switchToRegister.onclick = function(e) {
+    if (loginBtn) loginBtn.onclick = () => {
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('registerForm').style.display = 'none';
+        showModal();
+    };
+    
+    if (registerBtn) registerBtn.onclick = () => {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registerForm').style.display = 'block';
+        showModal();
+    };
+    
+    if (closeBtn) closeBtn.onclick = hideModal;
+    
+    if (switchToRegister) {
+        switchToRegister.onclick = (e) => {
             e.preventDefault();
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('registerForm').style.display = 'block';
         };
-        if (switchToLogin) switchToLogin.onclick = function(e) {
+    }
+    
+    if (switchToLogin) {
+        switchToLogin.onclick = (e) => {
             e.preventDefault();
             document.getElementById('loginForm').style.display = 'block';
             document.getElementById('registerForm').style.display = 'none';
         };
-        if (doLoginBtn) doLoginBtn.onclick = handleLogin;
-        if (doRegisterBtn) doRegisterBtn.onclick = handleRegister;
-        if (logoutBtn) logoutBtn.onclick = handleLogout;
-        
-        window.onclick = function(e) {
-            if (e.target === modal) modal.style.display = 'none';
+    }
+    
+    if (doLoginBtn) doLoginBtn.onclick = handleLogin;
+    if (doRegisterBtn) doRegisterBtn.onclick = handleRegister;
+    if (logoutBtn) logoutBtn.onclick = handleLogout;
+    
+    window.onclick = (e) => {
+        if (e.target === authModal) hideModal();
+    };
+    
+    // 导航菜单
+    const navHome = document.getElementById('nav-home');
+    const navProfile = document.getElementById('nav-profile');
+    
+    if (navHome) navHome.onclick = (e) => { e.preventDefault(); alert('首页正在建设中'); };
+    if (navProfile) {
+        navProfile.onclick = (e) => {
+            e.preventDefault();
+            if (currentUser) alert(`欢迎 ${currentUser.username}！个人中心即将上线`);
+            else alert('请先登录');
         };
     }
     
-    function bindNavEvents() {
-        const navHome = document.getElementById('nav-home');
-        const navProfile = document.getElementById('nav-profile');
-        
-        if (navHome) navHome.onclick = function(e) { e.preventDefault(); alert('首页正在建设中'); };
-        if (navProfile) {
-            navProfile.onclick = function(e) {
-                e.preventDefault();
-                if (currentUser) alert(`欢迎 ${currentUser.username}！个人中心即将上线`);
-                else alert('请先登录');
-            };
-        }
-    }
-    
-    // 页面加载完成后尝试初始化
-    document.addEventListener('DOMContentLoaded', function() {
-        initApp();
-    });
+    // ==================== 初始化 ====================
+    restoreSession();
 </script>
 
 </body>

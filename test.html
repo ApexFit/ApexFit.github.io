@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Supabase 连接测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        button { margin: 10px; padding: 10px; }
+        pre { background: #f0f0f0; padding: 10px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Supabase 连接测试</h1>
+    <div>
+        <button onclick="testConnection()">测试连接</button>
+        <button onclick="testRegister()">测试注册</button>
+        <button onclick="testLogin()">测试登录</button>
+        <button onclick="testCheckUser()">检查当前用户</button>
+    </div>
+    <pre id="output">点击按钮测试...</pre>
+
+    <script>
+        const SUPABASE_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const output = document.getElementById('output');
+
+        function log(msg, isError = false) {
+            const timestamp = new Date().toLocaleTimeString();
+            output.innerHTML += `\n[${timestamp}] ${msg}`;
+            if (isError) {
+                console.error(msg);
+            } else {
+                console.log(msg);
+            }
+        }
+
+        function clearLog() {
+            output.innerHTML = '';
+        }
+
+        async function testConnection() {
+            clearLog();
+            log('测试连接...');
+            try {
+                const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
+                if (error) {
+                    log('❌ 连接失败: ' + error.message, true);
+                } else {
+                    log('✅ 连接成功！profiles表可访问');
+                }
+            } catch (err) {
+                log('❌ 异常: ' + err.message, true);
+            }
+        }
+
+        async function testRegister() {
+            clearLog();
+            const username = 'testuser_' + Date.now();
+            const password = '123456';
+            log(`尝试注册: ${username} / ${password}`);
+            
+            try {
+                const email = `${username}@apexfit.local`;
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: { data: { username: username } }
+                });
+                
+                if (error) {
+                    log('❌ 注册失败: ' + error.message, true);
+                } else {
+                    log('✅ 注册成功！用户ID: ' + data.user.id);
+                    log('请检查 Supabase Auth 面板是否出现该用户');
+                }
+            } catch (err) {
+                log('❌ 异常: ' + err.message, true);
+            }
+        }
+
+        async function testLogin() {
+            clearLog();
+            const username = prompt('输入测试用户名（例如 testuser_xxx）:');
+            if (!username) return;
+            const password = prompt('输入密码:');
+            if (!password) return;
+            
+            log(`尝试登录: ${username}`);
+            try {
+                const email = `${username}@apexfit.local`;
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    log('❌ 登录失败: ' + error.message, true);
+                } else {
+                    log('✅ 登录成功！');
+                    log('用户信息: ' + JSON.stringify(data.user, null, 2));
+                }
+            } catch (err) {
+                log('❌ 异常: ' + err.message, true);
+            }
+        }
+
+        async function testCheckUser() {
+            clearLog();
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                log('✅ 当前有登录用户: ' + session.user.email);
+            } else {
+                log('❌ 当前无登录用户');
+            }
+        }
+    </script>
+</body>
+</html>

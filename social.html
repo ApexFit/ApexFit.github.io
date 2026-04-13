@@ -384,9 +384,58 @@
             color: #5A5A5A;
             margin-top: 40px;
         }
+        
+        .error-banner {
+            background: #FFF0F0;
+            border: 1px solid #FFCCCC;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .error-banner button {
+            margin-top: 12px;
+        }
     </style>
-    <!-- 使用 unpkg 替代 cdn.jsdelivr.net，避免跟踪防护问题 -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/index.js"></script>
+    <!-- 使用多个备用CDN -->
+    <script>
+        // 手动加载 Supabase，尝试多个CDN
+        function loadSupabase(cdnIndex) {
+            const cdns = [
+                'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/index.js',
+                'https://unpkg.com/@supabase/supabase-js@2/dist/umd/index.js',
+                'https://cdn.skypack.dev/@supabase/supabase-js@2'
+            ];
+            
+            if (cdnIndex >= cdns.length) {
+                console.error('所有CDN都加载失败');
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="error-banner">
+                        <h3>⚠️ 网络连接问题</h3>
+                        <p>无法加载 Supabase SDK，请检查网络连接后刷新页面重试。</p>
+                        <button class="btn-dark" onclick="location.reload()">刷新重试</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = cdns[cdnIndex];
+            script.onload = function() {
+                console.log('Supabase SDK 加载成功:', cdns[cdnIndex]);
+                window.supabaseLoaded = true;
+                initApp();
+            };
+            script.onerror = function() {
+                console.log('加载失败，尝试下一个CDN:', cdns[cdnIndex]);
+                loadSupabase(cdnIndex + 1);
+            };
+            document.head.appendChild(script);
+        }
+        
+        // 启动加载
+        loadSupabase(0);
+    </script>
 </head>
 <body>
 
@@ -413,7 +462,9 @@
 
 <main class="social-main">
     <div class="container">
-        <div id="mainContent"></div>
+        <div id="mainContent">
+            <div class="loading">正在加载...</div>
+        </div>
     </div>
 </main>
 
@@ -452,29 +503,34 @@
     const SB_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
     
-    // 等待 Supabase 库加载完成
     let supabaseClient = null;
-    
-    // 等待库加载
-    function initSupabase() {
-        if (window.supabase) {
-            supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
-            console.log('Supabase 初始化成功');
-            restoreSession();
-            renderMainContent();
-            return true;
-        } else {
-            console.log('等待 Supabase 加载...');
-            setTimeout(initSupabase, 100);
-            return false;
-        }
-    }
-    
     let currentUser = null;
+    let appInitialized = false;
+    
+    // ==================== 初始化应用 ====================
+    function initApp() {
+        if (appInitialized) return;
+        if (!window.supabase) {
+            console.log('等待 Supabase...');
+            setTimeout(initApp, 200);
+            return;
+        }
+        
+        console.log('Supabase 已就绪，初始化应用...');
+        supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
+        appInitialized = true;
+        
+        restoreSession();
+        renderMainContent();
+        bindAuthEvents();
+        bindNavEvents();
+    }
     
     // ==================== 渲染主内容 ====================
     function renderMainContent() {
         const container = document.getElementById('mainContent');
+        if (!container) return;
+        
         if (currentUser) {
             container.innerHTML = `
                 <div class="social-layout">
@@ -520,11 +576,9 @@
     }
     
     function bindPostEvents() {
-        // 发布按钮
         const publishBtn = document.getElementById('publishBtn');
         if (publishBtn) publishBtn.onclick = publishPost;
         
-        // 图片预览
         const postImage = document.getElementById('postImage');
         if (postImage) {
             postImage.onchange = function(e) {
@@ -739,7 +793,7 @@
                     </div>
                     <div class="comment-input">
                         <input type="text" id="comment-input-${post.id}" placeholder="写下评论...">
-                        <button onclick="addComment('${post.id}')">发送</button>
+                        <button onclick="window.addComment('${post.id}')">发送</button>
                     </div>
                 </div>
             `;
@@ -850,7 +904,6 @@
         };
     }
     
-    // 导航菜单
     function bindNavEvents() {
         const navHome = document.getElementById('nav-home');
         const navProfile = document.getElementById('nav-profile');
@@ -865,10 +918,10 @@
         }
     }
     
-    // ==================== 初始化 ====================
-    initSupabase();
-    bindAuthEvents();
-    bindNavEvents();
+    // 页面加载完成后尝试初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        initApp();
+    });
 </script>
 
 </body>

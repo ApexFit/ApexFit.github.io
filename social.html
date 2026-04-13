@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ApexFit | 运动社区</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="navbar">
+                <a href="#" class="logo">ApexFit</a>
+                <ul class="nav-menu">
+                    <li><a href="#" id="nav-home">首页</a></li>
+                    <li><a href="#" id="nav-social" class="active">运动社区</a></li>
+                    <li><a href="#" id="nav-profile">个人中心</a></li>
+                </ul>
+                <div class="auth-buttons" id="authButtons">
+                    <button class="btn-outline-small" id="loginBtn">登录</button>
+                    <button class="btn-dark-small" id="registerBtn">注册</button>
+                </div>
+                <div class="user-info" id="userInfo" style="display:none;">
+                    <span id="usernameDisplay"></span>
+                    <button class="btn-outline-small" id="logoutBtn">退出</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="social-main">
+        <div class="container">
+            <div class="social-layout">
+                <div class="post-section">
+                    <div class="post-card">
+                        <h3>发布动态</h3>
+                        <textarea id="postContent" placeholder="分享你的运动瞬间..." maxlength="500"></textarea>
+                        <div class="image-upload">
+                            <input type="file" id="postImage" accept="image/*">
+                            <label for="postImage" class="upload-label">📷 添加图片</label>
+                            <div id="imagePreview"></div>
+                        </div>
+                        <button class="btn-dark" id="publishBtn">发布 →</button>
+                    </div>
+                </div>
+
+                <div class="feed-section">
+                    <h3>最新动态</h3>
+                    <div id="postsList" class="posts-list">
+                        <div class="loading">加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="loginForm">
+                <h3>登录</h3>
+                <input type="text" id="loginUsername" placeholder="用户名">
+                <input type="password" id="loginPassword" placeholder="密码">
+                <button class="btn-dark" id="doLoginBtn">登录</button>
+                <p>没有账号？<a href="#" id="switchToRegister">立即注册</a></p>
+            </div>
+            <div id="registerForm" style="display:none;">
+                <h3>注册</h3>
+                <input type="text" id="regUsername" placeholder="用户名">
+                <input type="password" id="regPassword" placeholder="密码">
+                <input type="password" id="regConfirmPassword" placeholder="确认密码">
+                <button class="btn-dark" id="doRegisterBtn">注册</button>
+                <p>已有账号？<a href="#" id="switchToLogin">返回登录</a></p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ApexFit — 运动社区，分享你的进步</p>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

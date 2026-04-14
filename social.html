@@ -452,10 +452,9 @@
 </footer>
 
 <script type="module">
-    // ==================== 使用 ES Module 导入 Supabase ====================
+    // ==================== Supabase 配置 ====================
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
     
-    // Supabase 配置
     const SUPABASE_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
     
@@ -702,24 +701,25 @@
         }
     }
     
-    // 修复1：修正时间格式函数，正确解析ISO字符串
+    // 修复1：时间格式化 - 正确处理UTC时区转换
     function formatTime(dateStr) {
-        // 确保正确解析ISO格式的日期字符串
-        let date;
+        // 解析UTC时间字符串
+        let utcDate;
         if (typeof dateStr === 'string') {
-            // 替换空格为T以兼容不同格式
-            date = new Date(dateStr.replace(' ', 'T'));
+            // 确保正确解析ISO格式
+            utcDate = new Date(dateStr);
         } else {
-            date = new Date(dateStr);
+            utcDate = new Date(dateStr);
         }
         
-        // 检查日期是否有效
-        if (isNaN(date.getTime())) {
+        if (isNaN(utcDate.getTime())) {
             return '刚刚';
         }
         
-        const now = Date.now();
-        const diff = now - date.getTime();
+        // 获取本地时间（UTC时间 + 本地时区偏移）
+        const localDate = new Date(utcDate.getTime());
+        const now = new Date();
+        const diff = now.getTime() - localDate.getTime();
         
         const minutes = Math.floor(diff / 60000);
         if (minutes < 1) return '刚刚';
@@ -738,7 +738,42 @@
         });
     }
     
-    // 修复2：改进loadPosts函数，添加超时和错误处理
+    // 修复2：点赞功能 - 直接更新数据库，不依赖RPC函数
+    async function handleLike(postId, currentLikes, btnElement) {
+        if (!currentUser) {
+            alert('请先登录');
+            return false;
+        }
+        
+        try {
+            // 乐观更新：立即更新UI
+            const newLikes = currentLikes + 1;
+            btnElement.innerHTML = `❤️ ${newLikes}`;
+            btnElement.style.opacity = '0.7';
+            btnElement.disabled = true;
+            
+            // 直接更新数据库中的likes字段
+            const { error } = await supabase
+                .from('posts')
+                .update({ likes: newLikes })
+                .eq('id', postId);
+            
+            if (error) throw error;
+            
+            btnElement.disabled = false;
+            btnElement.style.opacity = '1';
+            return true;
+        } catch (err) {
+            console.error('点赞失败:', err);
+            // 回滚UI
+            btnElement.innerHTML = `❤️ ${currentLikes}`;
+            btnElement.disabled = false;
+            btnElement.style.opacity = '1';
+            alert('点赞失败: ' + err.message);
+            return false;
+        }
+    }
+    
     async function loadPosts() {
         const container = document.getElementById('postsList');
         if (!container) return;
@@ -746,9 +781,9 @@
         container.innerHTML = '<div class="loading">加载中...</div>';
         
         try {
-            // 添加超时控制（10秒）
+            // 添加超时控制
             const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('请求超时，请检查网络')), 10000);
+                setTimeout(() => reject(new Error('请求超时')), 10000);
             });
             
             const fetchPromise = supabase
@@ -769,15 +804,14 @@
             
             for (const post of posts) {
                 // 获取评论
-                const { data: comments, error: commentsError } = await supabase
+                const { data: comments } = await supabase
                     .from('comments')
                     .select('*')
                     .eq('post_id', post.id)
                     .order('created_at', { ascending: true });
                 
-                if (commentsError) console.warn('获取评论失败:', commentsError);
-                
                 const timeStr = formatTime(post.created_at);
+                const postId = post.id;
                 
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post-item';
@@ -789,7 +823,7 @@
                     <div class="post-content">${escapeHtml(post.content || '')}</div>
                     ${post.image ? `<img src="${post.image}" class="post-image" loading="lazy">` : ''}
                     <div class="post-actions">
-                        <button class="action-btn like-btn" data-id="${post.id}">❤️ ${post.likes || 0}</button>
+                        <button class="action-btn like-btn" data-id="${post.id}" data-likes="${post.likes || 0}">❤️ ${post.likes || 0}</button>
                         <button class="action-btn comment-btn" data-id="${post.id}">💬 ${comments?.length || 0}</button>
                     </div>
                     <div class="comments-section" id="comments-${post.id}" style="display:none;">
@@ -805,25 +839,24 @@
                 container.appendChild(postDiv);
             }
             
-            // 修复3：绑定点赞事件 - 使用正确的RPC调用
+            // 绑定点赞事件 - 使用新的handleLike函数
             document.querySelectorAll('.like-btn').forEach(btn => {
-                btn.onclick = async () => {
-                    if (!currentUser) { alert('请先登录'); return; }
+                const originalOnclick = btn.onclick;
+                btn.onclick = async (e) => {
+                    e.stopPropagation();
                     const postId = parseInt(btn.getAttribute('data-id'));
-                    try {
-                        const { error } = await supabase.rpc('increment_likes', { post_id: postId });
-                        if (error) throw error;
-                        loadPosts(); // 刷新列表
-                    } catch (err) {
-                        console.error('点赞失败:', err);
-                        alert('点赞失败: ' + err.message);
-                    }
+                    const currentLikes = parseInt(btn.getAttribute('data-likes'));
+                    await handleLike(postId, currentLikes, btn);
+                    // 更新data-likes属性
+                    const newLikes = currentLikes + 1;
+                    btn.setAttribute('data-likes', newLikes);
                 };
             });
             
             // 绑定评论展开
             document.querySelectorAll('.comment-btn').forEach(btn => {
-                btn.onclick = () => {
+                btn.onclick = (e) => {
+                    e.stopPropagation();
                     const postId = btn.getAttribute('data-id');
                     const div = document.getElementById(`comments-${postId}`);
                     if (div) {
@@ -834,7 +867,8 @@
             
             // 绑定评论提交
             document.querySelectorAll('.submit-comment-btn').forEach(btn => {
-                btn.onclick = async () => {
+                btn.onclick = async (e) => {
+                    e.stopPropagation();
                     const postId = btn.getAttribute('data-id');
                     await addComment(postId);
                 };
@@ -864,7 +898,7 @@
             
             if (error) throw error;
             input.value = '';
-            loadPosts(); // 刷新列表
+            loadPosts();
         } catch (err) {
             alert('评论失败: ' + err.message);
         }

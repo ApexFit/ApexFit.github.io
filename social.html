@@ -950,10 +950,21 @@
                     loadMoreContainer.innerHTML = `<button class="btn-outline-small" id="loadMoreBtn">加载更多 ↓</button>`;
                     const loadMoreBtn = document.getElementById('loadMoreBtn');
                     if (loadMoreBtn) {
-                        loadMoreBtn.onclick = () => {
+                        loadMoreBtn.onclick = async () => {
                             if (!isLoading && hasMore) {
+                                // 改变按钮文字
+                                const originalText = loadMoreBtn.innerHTML;
+                                loadMoreBtn.innerHTML = '加载中...';
+                                loadMoreBtn.disabled = true;
+                                
                                 currentPage++;
-                                loadPosts(currentPage, false);
+                                await loadPosts(currentPage, false);
+                                
+                                // 恢复按钮（如果没有更多数据了，按钮会被替换掉）
+                                if (hasMore) {
+                                    loadMoreBtn.innerHTML = originalText;
+                                    loadMoreBtn.disabled = false;
+                                }
                             }
                         };
                     }

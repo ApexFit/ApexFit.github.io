@@ -734,6 +734,7 @@
         return Math.floor(diffMinutes / 1440) + '天前';
     }
     
+    
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
@@ -744,7 +745,8 @@
         });
     }
     
-    // ========== 点赞功能 - 防止重复点赞 ==========
+    // ========== 修复2：点赞功能 - 防止重复点赞 ==========
+    // 记录已经点赞过的帖子ID（防止重复点赞）
     let likedPosts = new Set();
     
     async function handleLike(postId, currentLikes, btnElement) {
@@ -753,28 +755,41 @@
             return false;
         }
         
+        // 检查是否已经点赞过
         if (likedPosts.has(postId)) {
             alert('你已经点过赞了！');
             return false;
         }
         
+        // 防止重复点击
         if (btnElement.disabled) return false;
         
         try {
+            // 禁用按钮，防止重复提交
             btnElement.disabled = true;
             btnElement.style.opacity = '0.5';
             
+            // 计算新的点赞数
             const newLikes = currentLikes + 1;
             
-            const { error } = await supabase
+            // 更新数据库
+            const { data, error } = await supabase
                 .from('posts')
                 .update({ likes: newLikes })
-                .eq('id', postId);
+                .eq('id', postId)
+                .select();
             
-            if (error) throw error;
+            if (error) {
+                console.error('点赞更新错误:', error);
+                throw error;
+            }
             
+            console.log('点赞成功，返回数据:', data);
+            
+            // 记录已点赞
             likedPosts.add(postId);
             
+            // 更新UI
             btnElement.innerHTML = `❤️ ${newLikes}`;
             btnElement.setAttribute('data-likes', newLikes);
             btnElement.disabled = false;
@@ -783,7 +798,7 @@
             return true;
         } catch (err) {
             console.error('点赞失败:', err);
-            alert('点赞失败: ' + err.message);
+            alert('点赞失败: ' + (err.message || '未知错误'));
             btnElement.disabled = false;
             btnElement.style.opacity = '1';
             return false;
@@ -797,6 +812,7 @@
         container.innerHTML = '<div class="loading">加载中...</div>';
         
         try {
+            // 添加超时控制
             const timeoutPromise = new Promise((_, reject) => {
                 setTimeout(() => reject(new Error('请求超时')), 10000);
             });
@@ -818,6 +834,7 @@
             container.innerHTML = '';
             
             for (const post of posts) {
+                // 获取评论
                 const { data: comments } = await supabase
                     .from('comments')
                     .select('*')
@@ -825,6 +842,7 @@
                     .order('created_at', { ascending: true });
                 
                 const timeStr = formatTime(post.created_at);
+                const postId = post.id;
                 
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post-item';
@@ -854,6 +872,7 @@
             
             // 绑定点赞事件
             document.querySelectorAll('.like-btn').forEach(btn => {
+                // 移除可能存在的旧事件
                 const newBtn = btn.cloneNode(true);
                 btn.parentNode.replaceChild(newBtn, btn);
                 

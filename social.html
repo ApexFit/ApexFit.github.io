@@ -204,6 +204,12 @@
             color: #999;
         }
 
+        .loading-slow {
+            text-align: center;
+            padding: 40px;
+            color: #f5a623;
+        }
+
         .error-msg {
             text-align: center;
             padding: 40px;
@@ -379,6 +385,12 @@
             }
         }
 
+        .load-more-container {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
         .footer {
             background-color: #F8F8F8;
             border-top: 1px solid #EAEAEA;
@@ -462,6 +474,12 @@
     
     let currentUser = null;
     
+    // 分页相关变量
+    let currentPage = 1;
+    let hasMore = true;
+    let isLoading = false;
+    let slowTimeoutId = null;
+    
     console.log('Supabase 初始化成功');
     
     // ==================== DOM 元素 ====================
@@ -520,10 +538,14 @@
                         <div id="postsList" class="posts-list">
                             <div class="loading">加载中...</div>
                         </div>
+                        <div id="loadMoreContainer" class="load-more-container"></div>
                     </div>
                 </div>
             `;
-            loadPosts();
+            // 重置分页状态
+            currentPage = 1;
+            hasMore = true;
+            loadPosts(1, true);
             bindPostEvents();
         } else {
             mainContent.innerHTML = `
@@ -697,34 +719,24 @@
             document.getElementById('postContent').value = '';
             document.getElementById('postImage').value = '';
             document.getElementById('imagePreview').innerHTML = '';
-            loadPosts();
+            // 发布后重置分页并重新加载第一页
+            currentPage = 1;
+            hasMore = true;
+            loadPosts(1, true);
         }
     }
     
-    // ========== 时间格式化 - 正确版本 ==========
-    // 数据库存储的是 UTC+0 时间
-    // 需要计算：当前本地时间 - (数据库UTC时间 + 本地时区偏移) = 正确的时间差
+    // 时间格式化
     function formatTime(dateStr) {
-        // 解析数据库UTC时间字符串
         const utcDate = new Date(dateStr);
         
         if (isNaN(utcDate.getTime())) {
             return '刚刚';
         }
         
-        // 当前本地时间
         const now = new Date();
-        
-        // 获取本地时区偏移（分钟），例如北京时间是 -480（比UTC快8小时）
         const timezoneOffset = now.getTimezoneOffset();
-        
-        // 将数据库UTC时间转换为本地时间（加上时区偏移的毫秒数）
-        // getTimezoneOffset() 返回的是负数（对于东八区），所以需要减去
-        // 例如：北京时间 UTC+8，getTimezoneOffset() = -480
-        // utcDate.getTime() + (-480 * 60000) = 北京时间的时间戳
         const localPostTime = utcDate.getTime() - (timezoneOffset * 60000);
-        
-        // 计算时间差（毫秒）
         const diffMs = now.getTime() - localPostTime;
         
         const diffMinutes = Math.floor(diffMs / 60000);
@@ -744,7 +756,7 @@
         });
     }
     
-    // ========== 点赞功能 - 防止重复点赞 ==========
+    // 点赞功能
     let likedPosts = new Set();
     
     async function handleLike(postId, currentLikes, btnElement) {
@@ -790,32 +802,78 @@
         }
     }
     
-    async function loadPosts() {
+    // 分页加载帖子
+    async function loadPosts(page, isRefresh = false) {
+        if (isLoading) return;
+        
         const container = document.getElementById('postsList');
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+        
         if (!container) return;
         
-        container.innerHTML = '<div class="loading">加载中...</div>';
+        // 如果是刷新（第一页），清空容器并重置状态
+        if (isRefresh) {
+            container.innerHTML = '<div class="loading">加载中...</div>';
+            if (loadMoreContainer) loadMoreContainer.innerHTML = '';
+            currentPage = 1;
+            hasMore = true;
+            likedPosts.clear(); // 刷新时清空点赞记录
+        }
+        
+        isLoading = true;
+        
+        // 设置慢网提示（10秒后显示）
+        let slowTimer = setTimeout(() => {
+            const loadingDiv = container.querySelector('.loading');
+            if (loadingDiv && !isRefresh) {
+                loadingDiv.className = 'loading-slow';
+                loadingDiv.innerHTML = '网络较慢，请耐心等待...';
+            } else if (isRefresh && container.innerHTML.includes('加载中')) {
+                container.innerHTML = '<div class="loading-slow">网络较慢，请耐心等待...</div>';
+            }
+        }, 10000);
         
         try {
+            // 30秒超时
             const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('请求超时')), 10000);
+                setTimeout(() => reject(new Error('请求超时')), 30000);
             });
+            
+            // 分页查询：每页10条，按时间倒序
+            const from = (page - 1) * 10;
+            const to = from + 9;
             
             const fetchPromise = supabase
                 .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false });
+                .select('*', { count: 'exact' })
+                .order('created_at', { ascending: false })
+                .range(from, to);
             
-            const { data: posts, error } = await Promise.race([fetchPromise, timeoutPromise]);
+            const { data: posts, error, count } = await Promise.race([fetchPromise, timeoutPromise]);
+            
+            clearTimeout(slowTimer);
             
             if (error) throw error;
             
+            // 判断是否还有更多数据
             if (!posts || posts.length === 0) {
-                container.innerHTML = '<div class="loading">暂无动态，快来发布第一条吧！</div>';
+                if (isRefresh) {
+                    container.innerHTML = '<div class="loading">暂无动态，快来发布第一条吧！</div>';
+                }
+                hasMore = false;
+                if (loadMoreContainer) loadMoreContainer.innerHTML = '';
+                isLoading = false;
                 return;
             }
             
-            container.innerHTML = '';
+            // 判断是否还有下一页
+            const totalLoaded = page * 10;
+            hasMore = posts.length === 10 && (count === null || totalLoaded < count);
+            
+            // 渲染帖子
+            if (isRefresh) {
+                container.innerHTML = '';
+            }
             
             for (const post of posts) {
                 const { data: comments } = await supabase
@@ -886,9 +944,34 @@
                 };
             });
             
+            // 添加加载更多按钮
+            if (loadMoreContainer) {
+                if (hasMore) {
+                    loadMoreContainer.innerHTML = `<button class="btn-outline-small" id="loadMoreBtn">加载更多 ↓</button>`;
+                    const loadMoreBtn = document.getElementById('loadMoreBtn');
+                    if (loadMoreBtn) {
+                        loadMoreBtn.onclick = () => {
+                            if (!isLoading && hasMore) {
+                                currentPage++;
+                                loadPosts(currentPage, false);
+                            }
+                        };
+                    }
+                } else {
+                    loadMoreContainer.innerHTML = posts.length > 0 ? '<div style="text-align:center;padding:16px;color:#999;">已经到底了</div>' : '';
+                }
+            }
+            
         } catch (err) {
+            clearTimeout(slowTimer);
             console.error('加载帖子失败:', err);
-            container.innerHTML = `<div class="error-msg">加载失败: ${err.message}<br><button class="btn-outline-small" onclick="location.reload()">刷新重试</button></div>`;
+            if (isRefresh) {
+                container.innerHTML = `<div class="error-msg">加载失败: ${err.message}<br><button class="btn-outline-small" onclick="location.reload()">刷新重试</button></div>`;
+            } else {
+                alert('加载更多失败: ' + err.message);
+            }
+        } finally {
+            isLoading = false;
         }
     }
     
@@ -910,7 +993,8 @@
             
             if (error) throw error;
             input.value = '';
-            loadPosts();
+            // 刷新当前页
+            loadPosts(currentPage, true);
         } catch (err) {
             alert('评论失败: ' + err.message);
         }

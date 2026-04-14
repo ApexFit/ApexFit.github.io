@@ -701,22 +701,31 @@
         }
     }
     
-    // ========== 修复1：时间格式化 - 正确处理 UTC 时区 ==========
+    // ========== 时间格式化 - 正确版本 ==========
+    // 数据库存储的是 UTC+0 时间
+    // 需要计算：当前本地时间 - (数据库UTC时间 + 本地时区偏移) = 正确的时间差
     function formatTime(dateStr) {
-        // 数据库存储的是 UTC+0 时间字符串，直接解析为 Date 对象
-        const dbUTC = new Date(dateStr);
+        // 解析数据库UTC时间字符串
+        const utcDate = new Date(dateStr);
         
-        if (isNaN(dbUTC.getTime())) {
+        if (isNaN(utcDate.getTime())) {
             return '刚刚';
         }
         
-        // 获取当前本地时间，然后转换为 UTC 时间戳
-        // 关键：将本地时间减去时区偏移，得到对应的 UTC 时间
-        const nowLocal = new Date();
-        const nowUTC = new Date(nowLocal.getTime() - nowLocal.getTimezoneOffset() * 60000);
+        // 当前本地时间
+        const now = new Date();
         
-        // 计算 UTC 时间差（毫秒）
-        const diffMs = nowUTC.getTime() - dbUTC.getTime();
+        // 获取本地时区偏移（分钟），例如北京时间是 -480（比UTC快8小时）
+        const timezoneOffset = now.getTimezoneOffset();
+        
+        // 将数据库UTC时间转换为本地时间（加上时区偏移的毫秒数）
+        // getTimezoneOffset() 返回的是负数（对于东八区），所以需要减去
+        // 例如：北京时间 UTC+8，getTimezoneOffset() = -480
+        // utcDate.getTime() + (-480 * 60000) = 北京时间的时间戳
+        const localPostTime = utcDate.getTime() - (timezoneOffset * 60000);
+        
+        // 计算时间差（毫秒）
+        const diffMs = now.getTime() - localPostTime;
         
         const diffMinutes = Math.floor(diffMs / 60000);
         if (diffMinutes < 1) return '刚刚';
@@ -735,8 +744,7 @@
         });
     }
     
-    // ========== 修复2：点赞功能 - 防止重复点赞 ==========
-    // 记录已经点赞过的帖子ID（防止重复点赞）
+    // ========== 点赞功能 - 防止重复点赞 ==========
     let likedPosts = new Set();
     
     async function handleLike(postId, currentLikes, btnElement) {
@@ -745,41 +753,28 @@
             return false;
         }
         
-        // 检查是否已经点赞过
         if (likedPosts.has(postId)) {
             alert('你已经点过赞了！');
             return false;
         }
         
-        // 防止重复点击
         if (btnElement.disabled) return false;
         
         try {
-            // 禁用按钮，防止重复提交
             btnElement.disabled = true;
             btnElement.style.opacity = '0.5';
             
-            // 计算新的点赞数
             const newLikes = currentLikes + 1;
             
-            // 更新数据库
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('posts')
                 .update({ likes: newLikes })
-                .eq('id', postId)
-                .select();
+                .eq('id', postId);
             
-            if (error) {
-                console.error('点赞更新错误:', error);
-                throw error;
-            }
+            if (error) throw error;
             
-            console.log('点赞成功，返回数据:', data);
-            
-            // 记录已点赞
             likedPosts.add(postId);
             
-            // 更新UI
             btnElement.innerHTML = `❤️ ${newLikes}`;
             btnElement.setAttribute('data-likes', newLikes);
             btnElement.disabled = false;
@@ -788,7 +783,7 @@
             return true;
         } catch (err) {
             console.error('点赞失败:', err);
-            alert('点赞失败: ' + (err.message || '未知错误'));
+            alert('点赞失败: ' + err.message);
             btnElement.disabled = false;
             btnElement.style.opacity = '1';
             return false;
@@ -802,7 +797,6 @@
         container.innerHTML = '<div class="loading">加载中...</div>';
         
         try {
-            // 添加超时控制
             const timeoutPromise = new Promise((_, reject) => {
                 setTimeout(() => reject(new Error('请求超时')), 10000);
             });
@@ -824,7 +818,6 @@
             container.innerHTML = '';
             
             for (const post of posts) {
-                // 获取评论
                 const { data: comments } = await supabase
                     .from('comments')
                     .select('*')
@@ -832,7 +825,6 @@
                     .order('created_at', { ascending: true });
                 
                 const timeStr = formatTime(post.created_at);
-                const postId = post.id;
                 
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post-item';
@@ -862,7 +854,6 @@
             
             // 绑定点赞事件
             document.querySelectorAll('.like-btn').forEach(btn => {
-                // 移除可能存在的旧事件
                 const newBtn = btn.cloneNode(true);
                 btn.parentNode.replaceChild(newBtn, btn);
                 

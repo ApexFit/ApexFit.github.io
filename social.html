@@ -701,31 +701,28 @@
         }
     }
     
-    // 修复1：时间格式化 - 正确处理UTC时区转换
+    // 修复1：时间格式化 - 正确计算本地时间差值
     function formatTime(dateStr) {
         // 解析UTC时间字符串
-        let utcDate;
-        if (typeof dateStr === 'string') {
-            // 确保正确解析ISO格式
-            utcDate = new Date(dateStr);
-        } else {
-            utcDate = new Date(dateStr);
-        }
+        const utcDate = new Date(dateStr);
         
         if (isNaN(utcDate.getTime())) {
             return '刚刚';
         }
         
-        // 获取本地时间（UTC时间 + 本地时区偏移）
-        const localDate = new Date(utcDate.getTime());
+        // 获取当前本地时间
         const now = new Date();
-        const diff = now.getTime() - localDate.getTime();
         
-        const minutes = Math.floor(diff / 60000);
-        if (minutes < 1) return '刚刚';
-        if (minutes < 60) return minutes + '分钟前';
-        if (minutes < 1440) return Math.floor(minutes / 60) + '小时前';
-        return Math.floor(minutes / 1440) + '天前';
+        // 计算UTC时间戳差值（毫秒）
+        const diffMs = now.getTime() - utcDate.getTime();
+        
+        // 计算差值（分钟）
+        const diffMinutes = Math.floor(diffMs / 60000);
+        
+        if (diffMinutes < 1) return '刚刚';
+        if (diffMinutes < 60) return diffMinutes + '分钟前';
+        if (diffMinutes < 1440) return Math.floor(diffMinutes / 60) + '小时前';
+        return Math.floor(diffMinutes / 1440) + '天前';
     }
     
     function escapeHtml(str) {
@@ -738,38 +735,50 @@
         });
     }
     
-    // 修复2：点赞功能 - 直接更新数据库，不依赖RPC函数
+    // 修复2：点赞功能 - 使用正确的方法更新数据库
     async function handleLike(postId, currentLikes, btnElement) {
         if (!currentUser) {
             alert('请先登录');
             return false;
         }
         
+        // 防止重复点击
+        if (btnElement.disabled) return false;
+        
         try {
-            // 乐观更新：立即更新UI
-            const newLikes = currentLikes + 1;
-            btnElement.innerHTML = `❤️ ${newLikes}`;
-            btnElement.style.opacity = '0.7';
+            // 禁用按钮，防止重复提交
             btnElement.disabled = true;
+            btnElement.style.opacity = '0.5';
             
-            // 直接更新数据库中的likes字段
-            const { error } = await supabase
+            // 计算新的点赞数
+            const newLikes = currentLikes + 1;
+            
+            // 方法1：使用 eq 匹配 id，然后 update
+            const { data, error } = await supabase
                 .from('posts')
                 .update({ likes: newLikes })
-                .eq('id', postId);
+                .eq('id', postId)
+                .select();
             
-            if (error) throw error;
+            if (error) {
+                console.error('点赞更新错误:', error);
+                throw error;
+            }
             
+            console.log('点赞成功，返回数据:', data);
+            
+            // 更新UI
+            btnElement.innerHTML = `❤️ ${newLikes}`;
+            btnElement.setAttribute('data-likes', newLikes);
             btnElement.disabled = false;
             btnElement.style.opacity = '1';
+            
             return true;
         } catch (err) {
             console.error('点赞失败:', err);
-            // 回滚UI
-            btnElement.innerHTML = `❤️ ${currentLikes}`;
+            alert('点赞失败: ' + (err.message || '未知错误'));
             btnElement.disabled = false;
             btnElement.style.opacity = '1';
-            alert('点赞失败: ' + err.message);
             return false;
         }
     }
@@ -839,17 +848,17 @@
                 container.appendChild(postDiv);
             }
             
-            // 绑定点赞事件 - 使用新的handleLike函数
+            // 绑定点赞事件
             document.querySelectorAll('.like-btn').forEach(btn => {
-                const originalOnclick = btn.onclick;
-                btn.onclick = async (e) => {
+                // 移除可能存在的旧事件
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.onclick = async (e) => {
                     e.stopPropagation();
-                    const postId = parseInt(btn.getAttribute('data-id'));
-                    const currentLikes = parseInt(btn.getAttribute('data-likes'));
-                    await handleLike(postId, currentLikes, btn);
-                    // 更新data-likes属性
-                    const newLikes = currentLikes + 1;
-                    btn.setAttribute('data-likes', newLikes);
+                    const postId = parseInt(newBtn.getAttribute('data-id'));
+                    const currentLikes = parseInt(newBtn.getAttribute('data-likes'));
+                    await handleLike(postId, currentLikes, newBtn);
                 };
             });
             

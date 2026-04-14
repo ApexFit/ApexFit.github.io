@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ApexFit | 运动社区</title>
     <style>
         * {
@@ -204,6 +204,12 @@
             color: #999;
         }
 
+        .error-msg {
+            text-align: center;
+            padding: 40px;
+            color: #d32f2f;
+        }
+
         .posts-list {
             display: flex;
             flex-direction: column;
@@ -239,6 +245,7 @@
         .post-content {
             margin-bottom: 16px;
             line-height: 1.6;
+            word-break: break-word;
         }
 
         .post-image {
@@ -303,6 +310,7 @@
             font-size: 13px;
             padding: 6px 0;
             color: #555;
+            word-break: break-word;
         }
 
         .comment-author {
@@ -694,105 +702,25 @@
         }
     }
     
-    async function loadPosts() {
-        const container = document.getElementById('postsList');
-        if (!container) return;
-        
-        container.innerHTML = '<div class="loading">加载中...</div>';
-        
-        const { data: posts, error } = await supabase
-            .from('posts')
-            .select('*')
-            .order('created_at', { ascending: false });
-        
-        if (error || !posts || posts.length === 0) {
-            container.innerHTML = '<div class="loading">暂无动态，快来发布第一条吧！</div>';
-            return;
+    // 修复1：修正时间格式函数，正确解析ISO字符串
+    function formatTime(dateStr) {
+        // 确保正确解析ISO格式的日期字符串
+        let date;
+        if (typeof dateStr === 'string') {
+            // 替换空格为T以兼容不同格式
+            date = new Date(dateStr.replace(' ', 'T'));
+        } else {
+            date = new Date(dateStr);
         }
         
-        container.innerHTML = '';
-        for (const post of posts) {
-            const { data: comments } = await supabase
-                .from('comments')
-                .select('*')
-                .eq('post_id', post.id)
-                .order('created_at');
-            
-            const timeStr = formatTime(new Date(post.created_at));
-            
-            const postDiv = document.createElement('div');
-            postDiv.className = 'post-item';
-            postDiv.innerHTML = `
-                <div class="post-header">
-                    <span class="post-author">🏋️ ${escapeHtml(post.author)}</span>
-                    <span class="post-time">${timeStr}</span>
-                </div>
-                <div class="post-content">${escapeHtml(post.content || '')}</div>
-                ${post.image ? `<img src="${post.image}" class="post-image">` : ''}
-                <div class="post-actions">
-                    <button class="action-btn like-btn" data-id="${post.id}">❤️ ${post.likes || 0}</button>
-                    <button class="action-btn comment-btn" data-id="${post.id}">💬 ${comments?.length || 0}</button>
-                </div>
-                <div class="comments-section" id="comments-${post.id}" style="display:none;">
-                    <div class="comment-list">
-                        ${comments?.map(c => `<div class="comment-item"><span class="comment-author">${escapeHtml(c.author)}:</span> ${escapeHtml(c.content)}</div>`).join('')}
-                    </div>
-                    <div class="comment-input">
-                        <input type="text" id="comment-input-${post.id}" placeholder="写下评论...">
-                        <button class="submit-comment-btn" data-id="${post.id}">发送</button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(postDiv);
+        // 检查日期是否有效
+        if (isNaN(date.getTime())) {
+            return '刚刚';
         }
         
-        // 绑定点赞
-        document.querySelectorAll('.like-btn').forEach(btn => {
-            btn.onclick = async () => {
-                if (!currentUser) { alert('请先登录'); return; }
-                const postId = btn.getAttribute('data-id');
-                await supabase.rpc('increment_likes', { post_id: parseInt(postId) });
-                loadPosts();
-            };
-        });
+        const now = Date.now();
+        const diff = now - date.getTime();
         
-        // 绑定评论展开
-        document.querySelectorAll('.comment-btn').forEach(btn => {
-            btn.onclick = () => {
-                const postId = btn.getAttribute('data-id');
-                const div = document.getElementById(`comments-${postId}`);
-                div.style.display = div.style.display === 'none' ? 'block' : 'none';
-            };
-        });
-        
-        // 绑定评论提交
-        document.querySelectorAll('.submit-comment-btn').forEach(btn => {
-            btn.onclick = async () => {
-                const postId = btn.getAttribute('data-id');
-                await addComment(postId);
-            };
-        });
-    }
-    
-    async function addComment(postId) {
-        if (!currentUser) { alert('请先登录'); return; }
-        const input = document.getElementById(`comment-input-${postId}`);
-        const content = input.value.trim();
-        if (!content) return;
-        
-        await supabase.from('comments').insert([{
-            post_id: parseInt(postId),
-            content: content,
-            author: currentUser.username,
-            author_id: currentUser.id,
-            created_at: new Date().toISOString()
-        }]);
-        input.value = '';
-        loadPosts();
-    }
-    
-    function formatTime(date) {
-        const diff = Date.now() - date;
         const minutes = Math.floor(diff / 60000);
         if (minutes < 1) return '刚刚';
         if (minutes < 60) return minutes + '分钟前';
@@ -808,6 +736,138 @@
             if (m === '>') return '&gt;';
             return m;
         });
+    }
+    
+    // 修复2：改进loadPosts函数，添加超时和错误处理
+    async function loadPosts() {
+        const container = document.getElementById('postsList');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="loading">加载中...</div>';
+        
+        try {
+            // 添加超时控制（10秒）
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('请求超时，请检查网络')), 10000);
+            });
+            
+            const fetchPromise = supabase
+                .from('posts')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            const { data: posts, error } = await Promise.race([fetchPromise, timeoutPromise]);
+            
+            if (error) throw error;
+            
+            if (!posts || posts.length === 0) {
+                container.innerHTML = '<div class="loading">暂无动态，快来发布第一条吧！</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            for (const post of posts) {
+                // 获取评论
+                const { data: comments, error: commentsError } = await supabase
+                    .from('comments')
+                    .select('*')
+                    .eq('post_id', post.id)
+                    .order('created_at', { ascending: true });
+                
+                if (commentsError) console.warn('获取评论失败:', commentsError);
+                
+                const timeStr = formatTime(post.created_at);
+                
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post-item';
+                postDiv.innerHTML = `
+                    <div class="post-header">
+                        <span class="post-author">🏋️ ${escapeHtml(post.author)}</span>
+                        <span class="post-time">${timeStr}</span>
+                    </div>
+                    <div class="post-content">${escapeHtml(post.content || '')}</div>
+                    ${post.image ? `<img src="${post.image}" class="post-image" loading="lazy">` : ''}
+                    <div class="post-actions">
+                        <button class="action-btn like-btn" data-id="${post.id}">❤️ ${post.likes || 0}</button>
+                        <button class="action-btn comment-btn" data-id="${post.id}">💬 ${comments?.length || 0}</button>
+                    </div>
+                    <div class="comments-section" id="comments-${post.id}" style="display:none;">
+                        <div class="comment-list">
+                            ${comments?.map(c => `<div class="comment-item"><span class="comment-author">${escapeHtml(c.author)}:</span> ${escapeHtml(c.content)}</div>`).join('')}
+                        </div>
+                        <div class="comment-input">
+                            <input type="text" id="comment-input-${post.id}" placeholder="写下评论...">
+                            <button class="submit-comment-btn" data-id="${post.id}">发送</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(postDiv);
+            }
+            
+            // 修复3：绑定点赞事件 - 使用正确的RPC调用
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    if (!currentUser) { alert('请先登录'); return; }
+                    const postId = parseInt(btn.getAttribute('data-id'));
+                    try {
+                        const { error } = await supabase.rpc('increment_likes', { post_id: postId });
+                        if (error) throw error;
+                        loadPosts(); // 刷新列表
+                    } catch (err) {
+                        console.error('点赞失败:', err);
+                        alert('点赞失败: ' + err.message);
+                    }
+                };
+            });
+            
+            // 绑定评论展开
+            document.querySelectorAll('.comment-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const postId = btn.getAttribute('data-id');
+                    const div = document.getElementById(`comments-${postId}`);
+                    if (div) {
+                        div.style.display = div.style.display === 'none' ? 'block' : 'none';
+                    }
+                };
+            });
+            
+            // 绑定评论提交
+            document.querySelectorAll('.submit-comment-btn').forEach(btn => {
+                btn.onclick = async () => {
+                    const postId = btn.getAttribute('data-id');
+                    await addComment(postId);
+                };
+            });
+            
+        } catch (err) {
+            console.error('加载帖子失败:', err);
+            container.innerHTML = `<div class="error-msg">加载失败: ${err.message}<br><button class="btn-outline-small" onclick="location.reload()">刷新重试</button></div>`;
+        }
+    }
+    
+    async function addComment(postId) {
+        if (!currentUser) { alert('请先登录'); return; }
+        const input = document.getElementById(`comment-input-${postId}`);
+        if (!input) return;
+        const content = input.value.trim();
+        if (!content) return;
+        
+        try {
+            const { error } = await supabase.from('comments').insert([{
+                post_id: parseInt(postId),
+                content: content,
+                author: currentUser.username,
+                author_id: currentUser.id,
+                created_at: new Date().toISOString()
+            }]);
+            
+            if (error) throw error;
+            input.value = '';
+            loadPosts(); // 刷新列表
+        } catch (err) {
+            alert('评论失败: ' + err.message);
+        }
     }
     
     // ==================== 事件绑定 ====================

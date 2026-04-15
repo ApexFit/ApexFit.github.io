@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="ApexFit - 专属训练体系，不做课程，只做你的专属训练方案。运动与健康，黑白色调极简设计。">
-    <title>ApexFit | 专属训练体系 · 运动与健康</title>
+    <title>ApexFit | 运动健康首页</title>
     <style>
         * {
             margin: 0;
@@ -13,24 +12,21 @@
         }
 
         body {
-            background-color: #FFFFFF;   /* 纯白背景，黑白色调基底 */
+            background-color: #FFFFFF;
             color: #000000;
-            font-family: '微软雅黑', 'Microsoft YaHei', 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Segoe UI', sans-serif;
             line-height: 1.5;
-            scroll-behavior: smooth;
         }
 
-        /* 整体容器，用于内容居中及最大宽度控制 */
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 32px;
         }
 
-        /* ----- 标题栏 (白底) ----- */
         .header {
             background-color: #FFFFFF;
-            border-bottom: 1px solid #E6E6E6;   /* 极浅灰分割线，保持黑白极简 */
+            border-bottom: 1px solid #E6E6E6;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -46,30 +42,23 @@
             gap: 20px;
         }
 
-        /* Logo 靠左对齐 */
         .logo {
             font-size: 28px;
             font-weight: 700;
             letter-spacing: -0.5px;
             color: #000000;
             text-decoration: none;
-            transition: opacity 0.2s ease;
-            font-family: '微软雅黑', 'Microsoft YaHei', 'Inter', sans-serif;
+            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
         }
 
-        .logo:hover {
-            opacity: 0.75;
-        }
-
-        /* 右侧导航菜单 */
-        .nav-menu {
+        .nav-links {
             display: flex;
             list-style: none;
             gap: 36px;
             align-items: center;
         }
 
-        .nav-menu li a {
+        .nav-links li a {
             text-decoration: none;
             font-size: 18px;
             font-weight: 500;
@@ -80,29 +69,49 @@
             border-bottom: 2px solid transparent;
         }
 
-        .nav-menu li a:hover {
+        .nav-links li a:hover {
             color: #000000;
             border-bottom-color: #000000;
         }
 
-        /* 针对移动端菜单响应式 */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .nav-menu {
-                flex-wrap: wrap;
-                gap: 24px;
-                width: 100%;
-                justify-content: flex-start;
-            }
-            .container {
-                padding: 0 24px;
-            }
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        /* 主视觉区域（主页核心内容） */
+        .username-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: '微软雅黑', sans-serif;
+            color: #000;
+        }
+
+        .btn-outline-small {
+            background: transparent;
+            border: 1px solid #AAAAAA;
+            color: #2C2C2C;
+            padding: 8px 16px;
+            border-radius: 48px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-dark-small {
+            background: #000000;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 48px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
         .hero {
             text-align: center;
             padding: 80px 0 64px 0;
@@ -112,7 +121,6 @@
             justify-content: center;
         }
 
-        /* 大标题 黑色 ApexFit 字号72 */
         .hero h1 {
             font-size: 72px;
             font-weight: 800;
@@ -124,9 +132,8 @@
             text-transform: uppercase;
         }
 
-        /* 口号：微软雅黑，四号（约18px-20px） */
         .tagline {
-            font-size: 20px;      /* 四号 ≈ 18-20px 视觉舒适 */
+            font-size: 20px;
             font-weight: 400;
             color: #2C2C2C;
             font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
@@ -134,7 +141,6 @@
             letter-spacing: 0.3px;
         }
 
-        /* 黑底白字按钮 */
         .btn-dark {
             display: inline-flex;
             align-items: center;
@@ -143,7 +149,7 @@
             background-color: #000000;
             color: #FFFFFF;
             font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
-            font-size: 20px;      /* 四号粗体 */
+            font-size: 20px;
             font-weight: 700;
             text-decoration: none;
             padding: 14px 36px;
@@ -151,45 +157,15 @@
             border: 2px solid #000000;
             cursor: pointer;
             transition: all 0.25s ease-in-out;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            letter-spacing: 0.5px;
         }
 
         .btn-dark:hover {
             background-color: #FFFFFF;
             color: #000000;
-            border-color: #000000;
             transform: translateY(-3px);
             box-shadow: 0 12px 20px -12px rgba(0,0,0,0.25);
         }
 
-        .btn-dark:active {
-            transform: translateY(1px);
-        }
-
-        /* 为了让按钮突出，添加轻微呼吸感 */
-        .btn-dark span {
-            transition: transform 0.2s ease;
-        }
-
-        .btn-dark:hover span {
-            transform: translateX(4px);
-        }
-
-        /* 辅助装饰（极简黑白风格下，体现运动感——抽象细线） */
-        .hero-decoration {
-            margin-top: 40px;
-            opacity: 0.5;
-        }
-
-        .hero-decoration .line {
-            width: 60px;
-            height: 2px;
-            background-color: #aaa;
-            margin: 0 auto;
-        }
-
-        /* 优势区域 (运动健康主题额外展示，符合整体风格，不干扰核心内容) */
         .features {
             padding: 72px 0 80px 0;
             border-top: 1px solid #EAEAEA;
@@ -203,7 +179,6 @@
             color: #000000;
             margin-bottom: 56px;
             letter-spacing: -0.3px;
-            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
         }
 
         .features-grid {
@@ -222,19 +197,16 @@
             padding: 32px 24px;
             text-align: center;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
         }
 
         .feature-card:hover {
             transform: translateY(-6px);
             border-color: #CCCCCC;
-            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.08);
         }
 
         .feature-icon {
             font-size: 44px;
             margin-bottom: 20px;
-            filter: grayscale(0%);
         }
 
         .feature-card h3 {
@@ -242,17 +214,14 @@
             font-weight: 700;
             margin-bottom: 14px;
             color: #000000;
-            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
         }
 
         .feature-card p {
             font-size: 16px;
             color: #3A3A3A;
             line-height: 1.5;
-            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
         }
 
-        /* 简约页脚 */
         .footer {
             background-color: #F8F8F8;
             border-top: 1px solid #EAEAEA;
@@ -260,233 +229,252 @@
             text-align: center;
             font-size: 14px;
             color: #5A5A5A;
-            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
         }
 
-        .footer p {
-            margin: 4px 0;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
         }
 
-        .footer a {
-            color: #2C2C2C;
-            text-decoration: none;
-            border-bottom: 1px dotted #AAA;
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 32px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 24px;
+            position: relative;
         }
 
-        .footer a:hover {
-            color: #000000;
-            border-bottom-color: #000000;
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 16px;
+            font-size: 28px;
+            cursor: pointer;
         }
 
-        /* 响应式调整大标题 */
-        @media (max-width: 680px) {
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #D0D0D0;
+            border-radius: 48px;
+            font-size: 14px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
             .hero h1 {
                 font-size: 48px;
-                letter-spacing: -1px;
             }
             .tagline {
                 font-size: 18px;
-                padding: 0 8px;
             }
             .btn-dark {
                 font-size: 18px;
                 padding: 12px 28px;
             }
-            .section-title {
-                font-size: 28px;
-            }
-            .features {
-                padding: 48px 0 56px;
-            }
-        }
-
-        /* 辅助细微动效，增强黑白质感 */
-        .hero {
-            animation: fadeSlideUp 0.6s ease-out;
-        }
-
-        @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* 按钮焦点样式 */
-        .btn-dark:focus-visible {
-            outline: 2px solid #000000;
-            outline-offset: 3px;
-        }
-
-        /* 其他辅助 */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0,0,0,0);
-            border: 0;
         }
     </style>
+    <script src="https://esm.sh/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
-<!-- 白底标题栏：logo靠左，右边有序排列 -->
-<header class="header">
-    <div class="container">
-        <div class="navbar">
-            <!-- logo 靠左对齐 -->
-            <a href="#" class="logo" aria-label="ApexFit 首页">ApexFit</a>
-            <!-- 右侧菜单 有序排列 方案设计 / 关于我们 / 社区（等）-->
-            <ul class="nav-menu">
-                <li><a href="#" id="nav-solution">方案设计</a></li>
-                <li><a href="#" id="nav-about">关于我们</a></li>
-                <li><a href="#" id="nav-community">训练社区</a></li>
-                <!-- 为满足有序排列“等”字，第三个菜单体现健康社群风格 -->
-            </ul>
-        </div>
-    </div>
-</header>
-
-<main>
-    <!-- 主页核心内容：黑色ApexFit居中，口号，黑底白字按钮 -->
-    <div class="hero">
+    <header class="header">
         <div class="container">
-            <h1>ApexFit</h1>
-            <p class="tagline">我们不做课程，只做你的专属训练体系</p>
-            <!-- 黑底白字按钮，包含箭头符号 -->
-            <button class="btn-dark" id="generatePlanBtn">
-                生成你的专属训练方案 <span>→</span>
-            </button>
-            <!-- 极简黑白装饰线，暗示运动节奏感（可选，不干扰内容）-->
-            <div class="hero-decoration">
-                <div class="line"></div>
+            <div class="navbar">
+                <a href="index.html" class="logo">ApexFit</a>
+                <ul class="nav-links">
+                    <li><a href="plan.html">方案设计</a></li>
+                    <li><a href="map.html">场地查询</a></li>
+                    <li><a href="social.html">运动社区</a></li>
+                </ul>
+                <div class="user-area" id="userArea">
+                    <button class="btn-outline-small" id="loginBtn">登录</button>
+                    <button class="btn-dark-small" id="registerBtn">注册</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero">
+            <div class="container">
+                <h1>ApexFit</h1>
+                <p class="tagline">我们不做课程，只做你的专属训练体系</p>
+                <a href="plan.html" class="btn-dark" id="generateBtn">生成你的专属训练方案 →</a>
+            </div>
+        </div>
+
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">为何选择 ApexFit</h2>
+                <div class="features-grid">
+                    <div class="feature-card"><div class="feature-icon">🏋️‍♂️</div><h3>科学评估</h3><p>基于运动科学+身体数据，生成精准训练蓝图。</p></div>
+                    <div class="feature-card"><div class="feature-icon">⚡</div><h3>动态适应</h3><p>实时反馈，体系不断进化，匹配你的进步曲线。</p></div>
+                    <div class="feature-card"><div class="feature-icon">🎯</div><h3>专属体系</h3><p>非固定课程，而是为你量身打造的完整训练系统。</p></div>
+                    <div class="feature-card"><div class="feature-icon">📊</div><h3>数据追踪</h3><p>量化成果，清晰看见每一次突破。</p></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ApexFit — 专属训练体系 · 运动即自由</p>
+        </div>
+    </footer>
+
+    <!-- 登录/注册模态框 -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="loginForm">
+                <h3>登录</h3>
+                <input type="text" id="loginUsername" placeholder="用户名">
+                <input type="password" id="loginPassword" placeholder="密码">
+                <button class="btn-dark" id="doLoginBtn">登录</button>
+                <p>没有账号？ <a id="switchToRegister">立即注册</a></p>
+            </div>
+            <div id="registerForm" style="display:none;">
+                <h3>注册</h3>
+                <input type="text" id="regUsername" placeholder="用户名">
+                <input type="password" id="regPassword" placeholder="密码">
+                <input type="password" id="regConfirmPassword" placeholder="确认密码">
+                <button class="btn-dark" id="doRegisterBtn">注册</button>
+                <p>已有账号？ <a id="switchToLogin">返回登录</a></p>
             </div>
         </div>
     </div>
 
-    <!-- 额外区域：运动健康理念 强化专属训练体系 (符合黑白色调、运动主题) -->
-    <section class="features">
-        <div class="container">
-            <h2 class="section-title">为何选择 ApexFit</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🏋️‍♂️</div>
-                    <h3>科学评估</h3>
-                    <p>基于运动科学+身体数据，生成精准训练蓝图。</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>动态适应</h3>
-                    <p>实时反馈，体系不断进化，匹配你的进步曲线。</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>专属体系</h3>
-                    <p>非固定课程，而是为你量身打造的完整训练系统。</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>数据追踪</h3>
-                    <p>量化成果，清晰看见每一次突破。</p>
-                </div>
-            </div>
-        </div>
-    </section>
-</main>
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+        const SUPABASE_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentUser = null;
 
-<!-- 简约页脚，黑白色调 -->
-<footer class="footer">
-    <div class="container">
-        <p>© 2025 ApexFit — 专属训练体系 · 运动即自由</p>
-        <p>黑白色调 · 极致专注 | 健康生活，从专属方案开始</p>
-        <p style="margin-top: 8px; font-size: 12px;">
-            <a href="#" id="footerLink">隐私条款</a> &nbsp;|&nbsp; 
-            <a href="#" id="footerSupport">客服支持</a>
-        </p>
-    </div>
-</footer>
+        // DOM elements
+        const userArea = document.getElementById('userArea');
+        const authModal = document.getElementById('authModal');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const closeBtn = document.querySelector('.close');
+        const doLoginBtn = document.getElementById('doLoginBtn');
+        const doRegisterBtn = document.getElementById('doRegisterBtn');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
 
-<!-- 简单交互模拟：按钮点击以及菜单点击展示提示，提升演示体验，无后端但符合首页演示 -->
-<script>
-    (function() {
-        // 按钮点击核心交互（生成你的专属训练方案）
-        const generateBtn = document.getElementById('generatePlanBtn');
-        if (generateBtn) {
-            generateBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                // 模拟弹出提示 专属训练方案即将到来（符合黑白色调运动健康风格）
-                alert('✨ 正在为你构建专属训练体系...\n即刻解锁个性化方案，科学运动，突破自我。\n（演示版，正式功能即将开放）');
-            });
+        function showModal() { authModal.style.display = 'block'; }
+        function hideModal() { authModal.style.display = 'none'; }
+
+        async function handleRegister() {
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirmPassword').value;
+            if (!username || !password) { alert('请填写完整'); return; }
+            if (password !== confirm) { alert('密码不一致'); return; }
+            if (password.length < 6) { alert('密码至少6位'); return; }
+            try {
+                const email = username + '@apexfit.local';
+                const { data, error } = await supabase.auth.signUp({
+                    email, password,
+                    options: { data: { username } }
+                });
+                if (error) throw error;
+                currentUser = { id: data.user.id, username };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                alert('注册成功');
+                hideModal();
+                updateUI();
+            } catch (err) { alert('注册失败: ' + err.message); }
         }
 
-        // 标题栏菜单的简单交互 以及 页脚链接（演示）
-        const navSolution = document.getElementById('nav-solution');
-        const navAbout = document.getElementById('nav-about');
-        const navCommunity = document.getElementById('nav-community');
-        const footerLink = document.getElementById('footerLink');
-        const footerSupport = document.getElementById('footerSupport');
-
-        function showComingSoon(feature) {
-            alert(`「${feature}」即将上线\n打造更完整的专属训练生态，敬请期待！`);
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            if (!username || !password) { alert('请填写完整'); return; }
+            try {
+                const email = username + '@apexfit.local';
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                currentUser = { id: data.user.id, username };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                alert('登录成功');
+                hideModal();
+                updateUI();
+            } catch (err) { alert('登录失败: ' + err.message); }
         }
 
-        if (navSolution) {
-            navSolution.addEventListener('click', (e) => {
-                e.preventDefault();
-                showComingSoon('方案设计');
-            });
-        }
-        if (navAbout) {
-            navAbout.addEventListener('click', (e) => {
-                e.preventDefault();
-                showComingSoon('关于我们 — ApexFit 使命：不做标准课程，只做属于你的训练体系');
-            });
-        }
-        if (navCommunity) {
-            navCommunity.addEventListener('click', (e) => {
-                e.preventDefault();
-                showComingSoon('训练社区 · 与同频运动者交流成长');
-            });
-        }
-        if (footerLink) {
-            footerLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                alert('隐私与数据保护承诺\n你的训练数据仅用于构建个性化体系，安全可靠。');
-            });
-        }
-        if (footerSupport) {
-            footerSupport.addEventListener('click', (e) => {
-                e.preventDefault();
-                alert('客服支持邮箱：support@apexfit.com\n专属运动顾问将在24小时内联系。');
-            });
+        function handleLogout() {
+            supabase.auth.signOut();
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUI();
+            alert('已退出');
         }
 
-        // 额外：增加键盘辅助，符合无障碍，按钮Enter触发
-        generateBtn && generateBtn.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                generateBtn.click();
+        function updateUI() {
+            if (currentUser) {
+                userArea.innerHTML = `
+                    <span class="username-btn" id="profileBtn">${currentUser.username}</span>
+                    <button class="btn-outline-small" id="logoutBtn">退出</button>
+                `;
+                document.getElementById('profileBtn')?.addEventListener('click', () => { window.location.href = 'profile.html'; });
+                document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
+            } else {
+                userArea.innerHTML = `
+                    <button class="btn-outline-small" id="loginBtn">登录</button>
+                    <button class="btn-dark-small" id="registerBtn">注册</button>
+                `;
+                document.getElementById('loginBtn')?.addEventListener('click', () => {
+                    document.getElementById('loginForm').style.display = 'block';
+                    document.getElementById('registerForm').style.display = 'none';
+                    showModal();
+                });
+                document.getElementById('registerBtn')?.addEventListener('click', () => {
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('registerForm').style.display = 'block';
+                    showModal();
+                });
             }
-        });
+        }
 
-        // 让所有导航项对空格/回车也有响应 (提升体验)
-        const allNavLinks = document.querySelectorAll('.nav-menu a, .footer a');
-        allNavLinks.forEach(link => {
-            link.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    link.click();
-                }
-            });
-        });
-    })();
-</script>
+        async function restoreSession() {
+            const stored = localStorage.getItem('currentUser');
+            if (stored) currentUser = JSON.parse(stored);
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { currentUser = null; localStorage.removeItem('currentUser'); }
+            updateUI();
+        }
+
+        // 事件绑定
+        switchToRegister?.addEventListener('click', (e) => { e.preventDefault(); document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'block'; });
+        switchToLogin?.addEventListener('click', (e) => { e.preventDefault(); document.getElementById('loginForm').style.display = 'block'; document.getElementById('registerForm').style.display = 'none'; });
+        doLoginBtn?.addEventListener('click', handleLogin);
+        doRegisterBtn?.addEventListener('click', handleRegister);
+        closeBtn?.addEventListener('click', hideModal);
+        window.addEventListener('click', (e) => { if (e.target === authModal) hideModal(); });
+
+        restoreSession();
+    </script>
 </body>
 </html>

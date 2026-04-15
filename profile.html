@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ApexFit | 个人中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .header {
+            background-color: #FFFFFF;
+            border-bottom: 1px solid #E6E6E6;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #000000;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 36px;
+        }
+        .nav-links li a {
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            color: #1A1A1A;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            border-bottom-color: #000000;
+        }
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .username-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: '微软雅黑', sans-serif;
+            color: #000;
+        }
+        .btn-outline-small {
+            background: transparent;
+            border: 1px solid #AAAAAA;
+            color: #2C2C2C;
+            padding: 8px 16px;
+            border-radius: 48px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn-dark-small {
+            background: #000000;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 48px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn-dark {
+            background: #000000;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 48px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .profile-main {
+            padding: 48px 0;
+        }
+        .profile-card {
+            background: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            border-radius: 32px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #EFEFEF;
+        }
+        .profile-header h2 {
+            font-size: 24px;
+        }
+        .edit-btn {
+            background: none;
+            border: 1px solid #DDD;
+            padding: 6px 16px;
+            border-radius: 48px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .info-row {
+            margin-bottom: 16px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .info-label {
+            width: 100px;
+            font-weight: 600;
+            color: #555;
+        }
+        .info-value {
+            flex: 1;
+            color: #1A1A1A;
+        }
+        .signature-box {
+            background: #F9F9F9;
+            padding: 16px;
+            border-radius: 24px;
+            margin-top: 16px;
+        }
+        .signature-text {
+            color: #666;
+            font-style: italic;
+        }
+        .my-posts {
+            margin-top: 32px;
+        }
+        .posts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .post-item {
+            background: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            border-radius: 20px;
+            padding: 20px;
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .post-time {
+            font-size: 12px;
+            color: #999;
+        }
+        .post-content {
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .post-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 12px;
+            margin-top: 8px;
+        }
+        .load-more-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 32px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 24px;
+            position: relative;
+        }
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 16px;
+            font-size: 28px;
+            cursor: pointer;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #D0D0D0;
+            border-radius: 48px;
+            font-size: 14px;
+        }
+        .modal-content button {
+            width: 100%;
+            margin-top: 12px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        .footer {
+            background-color: #F8F8F8;
+            border-top: 1px solid #EAEAEA;
+            padding: 24px 0;
+            text-align: center;
+            font-size: 13px;
+            margin-top: 40px;
+        }
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                gap: 24px;
+                flex-wrap: wrap;
+            }
+            .info-row {
+                flex-direction: column;
+            }
+            .info-label {
+                width: auto;
+                margin-bottom: 4px;
+            }
+        }
+    </style>
+    <script src="https://esm.sh/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <div class="navbar">
+            <a href="index.html" class="logo">ApexFit</a>
+            <ul class="nav-links">
+                <li><a href="plan.html">方案设计</a></li>
+                <li><a href="map.html">场地查询</a></li>
+                <li><a href="social.html">运动社区</a></li>
+            </ul>
+            <div class="user-area" id="userArea">
+                <button class="btn-outline-small" id="loginBtn">登录</button>
+                <button class="btn-dark-small" id="registerBtn">注册</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="profile-main">
+    <div class="container">
+        <div id="profileContent">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+</main>
+
+<!-- 登录/注册模态框 -->
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="loginForm">
+            <h3>登录</h3>
+            <input type="text" id="loginUsername" placeholder="用户名">
+            <input type="password" id="loginPassword" placeholder="密码">
+            <button class="btn-dark" id="doLoginBtn">登录</button>
+            <p>没有账号？ <a id="switchToRegister">立即注册</a></p>
+        </div>
+        <div id="registerForm" style="display:none;">
+            <h3>注册</h3>
+            <input type="text" id="regUsername" placeholder="用户名">
+            <input type="password" id="regPassword" placeholder="密码">
+            <input type="password" id="regConfirmPassword" placeholder="确认密码">
+            <button class="btn-dark" id="doRegisterBtn">注册</button>
+            <p>已有账号？ <a id="switchToLogin">返回登录</a></p>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2025 ApexFit — 个人中心</p>
+    </div>
+</footer>
+
+<script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const SUPABASE_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
+
+    // DOM 元素
+    const profileContent = document.getElementById('profileContent');
+    const authModal = document.getElementById('authModal');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const closeBtn = document.querySelector('.close');
+    const doLoginBtn = document.getElementById('doLoginBtn');
+    const doRegisterBtn = document.getElementById('doRegisterBtn');
+    const switchToRegister = document.getElementById('switchToRegister');
+    const switchToLogin = document.getElementById('switchToLogin');
+    const userArea = document.getElementById('userArea');
+
+    // 分页相关
+    let currentPage = 1;
+    let hasMore = true;
+    let isLoading = false;
+
+    // 辅助函数
+    function showModal() { authModal.style.display = 'block'; }
+    function hideModal() { authModal.style.display = 'none'; }
+
+    async function handleRegister() {
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regConfirmPassword').value;
+        if (!username || !password) { alert('请填写完整'); return; }
+        if (password !== confirm) { alert('密码不一致'); return; }
+        if (password.length < 6) { alert('密码至少6位'); return; }
+        try {
+            const email = username + '@apexfit.local';
+            const { data, error } = await supabase.auth.signUp({
+                email: email, password: password,
+                options: { data: { username: username } }
+            });
+            if (error) throw error;
+            currentUser = { id: data.user.id, username: username };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('注册成功');
+            hideModal();
+            updateUI();
+            loadProfile();
+        } catch (err) { alert('注册失败: ' + err.message); }
+    }
+
+    async function handleLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if (!username || !password) { alert('请填写完整'); return; }
+        try {
+            const email = username + '@apexfit.local';
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            currentUser = { id: data.user.id, username: username };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('登录成功');
+            hideModal();
+            updateUI();
+            loadProfile();
+        } catch (err) { alert('登录失败: ' + err.message); }
+    }
+
+    function handleLogout() {
+        supabase.auth.signOut();
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        updateUI();
+        loadProfile();
+        alert('已退出');
+    }
+
+    function updateUI() {
+        if (currentUser) {
+            userArea.innerHTML = `
+                <span class="username-btn" id="profileBtn">${currentUser.username}</span>
+                <button class="btn-outline-small" id="logoutBtn">退出</button>
+            `;
+            document.getElementById('profileBtn')?.addEventListener('click', () => {});
+            document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
+        } else {
+            userArea.innerHTML = `
+                <button class="btn-outline-small" id="loginBtn">登录</button>
+                <button class="btn-dark-small" id="registerBtn">注册</button>
+            `;
+            document.getElementById('loginBtn')?.addEventListener('click', () => { document.getElementById('loginForm').style.display='block'; document.getElementById('registerForm').style.display='none'; showModal(); });
+            document.getElementById('registerBtn')?.addEventListener('click', () => { document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; showModal(); });
+        }
+    }
+
+    async function restoreSession() {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) currentUser = JSON.parse(stored);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) { currentUser = null; localStorage.removeItem('currentUser'); }
+        updateUI();
+        if (currentUser) loadProfile();
+        else profileContent.innerHTML = `<div class="profile-card"><p style="text-align:center;">请先登录查看个人中心</p></div>`;
+    }
+
+    // 获取用户档案数据（从profiles表）
+    async function getUserProfile(userId) {
+        const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+        if (error && error.code !== 'PGRST116') console.error(error);
+        return data || {};
+    }
+
+    // 保存档案（方案设计后调用）
+    window.saveCustomPlan = async function(planData) {
+        if (!currentUser) return false;
+        const { error } = await supabase.from('profiles').upsert({
+            id: currentUser.id,
+            username: currentUser.username,
+            custom_plan: planData,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+        if (error) console.error('保存方案失败', error);
+        return !error;
+    };
+
+    // 加载个人中心内容
+    async function loadProfile() {
+        if (!currentUser) return;
+        profileContent.innerHTML = '<div class="loading">加载中...</div>';
+        const profile = await getUserProfile(currentUser.id);
+        const plan = profile.custom_plan || null;
+        // 渲染档案卡片
+        let planHtml = '';
+        if (plan) {
+            planHtml = `
+                <div class="profile-card">
+                    <div class="profile-header"><h2>📋 你的定制档案</h2></div>
+                    <div class="info-row"><span class="info-label">基础</span><span class="info-value">${plan.basic || ''}</span></div>
+                    <div class="info-row"><span class="info-label">目标</span><span class="info-value">${plan.goal || ''}</span></div>
+                    <div class="info-row"><span class="info-label">能力</span><span class="info-value">${plan.ability || ''}</span></div>
+                    <div class="info-row"><span class="info-label">约束</span><span class="info-value">${plan.constraint || ''}</span></div>
+                </div>
+            `;
+        } else {
+            planHtml = `<div class="profile-card"><p>暂无定制档案，请前往<a href="plan.html">方案设计</a>生成。</p></div>`;
+        }
+        // 个性签名
+        const signature = profile.signature || '这个人很懒，还没有个性签名。';
+        const signatureHtml = `
+            <div class="profile-card">
+                <div class="profile-header">
+                    <h2>📝 个性签名</h2>
+                    <button class="edit-btn" id="editSignatureBtn">编辑</button>
+                </div>
+                <div class="signature-box">
+                    <p class="signature-text" id="signatureText">${escapeHtml(signature)}</p>
+                </div>
+            </div>
+        `;
+        // 我的帖子
+        const postsHtml = `<div class="profile-card my-posts"><h2>📌 我的帖子</h2><div id="myPostsList" class="posts-list"><div class="loading">加载中...</div></div><div id="loadMoreContainer"></div></div>`;
+        profileContent.innerHTML = planHtml + signatureHtml + postsHtml;
+        document.getElementById('editSignatureBtn')?.addEventListener('click', () => editSignature());
+        loadMyPosts(1, true);
+    }
+
+    async function editSignature() {
+        const currentSig = document.getElementById('signatureText')?.innerText || '';
+        const newSig = prompt('请输入新的个性签名：', currentSig);
+        if (newSig !== null && newSig.trim() !== '') {
+            const { error } = await supabase.from('profiles').update({ signature: newSig.trim() }).eq('id', currentUser.id);
+            if (error) alert('更新失败');
+            else { document.getElementById('signatureText').innerText = newSig.trim(); }
+        }
+    }
+
+    async function loadMyPosts(page, refresh = false) {
+        const container = document.getElementById('myPostsList');
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+        if (!container) return;
+        if (refresh) { currentPage = 1; hasMore = true; isLoading = false; container.innerHTML = '<div class="loading">加载中...</div>'; }
+        if (isLoading) return;
+        isLoading = true;
+        try {
+            const from = (page-1)*10;
+            const to = from+9;
+            const { data: posts, error, count } = await supabase
+                .from('posts')
+                .select('*', { count: 'exact' })
+                .eq('author_id', currentUser.id)
+                .order('created_at', { ascending: false })
+                .range(from, to);
+            if (error) throw error;
+            if (refresh) container.innerHTML = '';
+            if (!posts || posts.length === 0) {
+                if (refresh) container.innerHTML = '<div class="loading">暂无发布，快去社区分享吧！</div>';
+                hasMore = false;
+                if (loadMoreContainer) loadMoreContainer.innerHTML = '';
+                isLoading = false;
+                return;
+            }
+            for (const post of posts) {
+                const timeStr = formatTime(post.created_at);
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post-item';
+                postDiv.innerHTML = `
+                    <div class="post-header"><span>${escapeHtml(post.author)}</span><span class="post-time">${timeStr}</span></div>
+                    <div class="post-content">${escapeHtml(post.content || '')}</div>
+                    ${post.image ? `<img src="${post.image}" class="post-image" loading="lazy">` : ''}
+                `;
+                container.appendChild(postDiv);
+            }
+            hasMore = posts.length === 10;
+            if (loadMoreContainer) {
+                if (hasMore) {
+                    loadMoreContainer.innerHTML = `<button class="btn-outline-small" id="loadMoreBtn">加载更多 ↓</button>`;
+                    document.getElementById('loadMoreBtn')?.addEventListener('click', () => { if(!isLoading && hasMore) { currentPage++; loadMyPosts(currentPage, false); } });
+                } else {
+                    loadMoreContainer.innerHTML = '<div style="text-align:center;padding:16px;color:#999;">已经到底了</div>';
+                }
+            }
+        } catch(err) {
+            console.error(err);
+            if (refresh) container.innerHTML = '<div class="loading">加载失败</div>';
+        } finally { isLoading = false; }
+    }
+
+    function formatTime(dateStr) {
+        const utcDate = new Date(dateStr);
+        if (isNaN(utcDate)) return '刚刚';
+        const now = new Date();
+        const offset = now.getTimezoneOffset();
+        const localTime = utcDate.getTime() - offset * 60000;
+        const diff = now.getTime() - localTime;
+        const minutes = Math.floor(diff/60000);
+        if (minutes<1) return '刚刚';
+        if (minutes<60) return minutes+'分钟前';
+        if (minutes<1440) return Math.floor(minutes/60)+'小时前';
+        return Math.floor(minutes/1440)+'天前';
+    }
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+
+    // 事件绑定
+    document.getElementById('switchToRegister')?.addEventListener('click', (e) => { e.preventDefault(); document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; });
+    document.getElementById('switchToLogin')?.addEventListener('click', (e) => { e.preventDefault(); document.getElementById('loginForm').style.display='block'; document.getElementById('registerForm').style.display='none'; });
+    doLoginBtn?.addEventListener('click', handleLogin);
+    doRegisterBtn?.addEventListener('click', handleRegister);
+    closeBtn?.addEventListener('click', hideModal);
+    window.addEventListener('click', (e) => { if(e.target === authModal) hideModal(); });
+
+    restoreSession();
+</script>
+</body>
+</html>

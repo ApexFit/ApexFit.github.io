@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ApexFit | 附近运动场馆</title>
+    <!-- 高德地图 JS API 2.0 -->
+    <script type="text/javascript">
+        window._AMapSecurityConfig = {
+            securityJsCode: "7e9bb2edef5c00a2fa919c543e538144"
+        };
+    </script>
+    <script src="https://webapi.amap.com/maps?v=2.0&key=4e1a742b3f29d19737afcd302f8b867a"></script>
+    <script src="https://webapi.amap.com/maps?v=2.0&key=4e1a742b3f29d19737afcd302f8b867a&plugin=AMap.Geolocation,AMap.PlaceSearch,AMap.Geocoder,AMap.ToolBar"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-family: '微软雅黑', 'Microsoft YaHei', sans-serif;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header {
+            background-color: #FFFFFF;
+            border-bottom: 1px solid #E6E6E6;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #000000;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 36px;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            color: #1A1A1A;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            border-bottom-color: #000000;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .username-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: '微软雅黑', sans-serif;
+            color: #000;
+        }
+
+        .btn-outline-small {
+            background: transparent;
+            border: 1px solid #AAAAAA;
+            color: #2C2C2C;
+            padding: 8px 16px;
+            border-radius: 48px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-dark-small {
+            background: #000000;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 48px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-dark {
+            background: #000000;
+            color: #FFFFFF;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 48px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .map-section {
+            padding: 32px 0 48px;
+        }
+
+        .control-panel {
+            background: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            border-radius: 28px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2C2C2C;
+        }
+
+        .control-group input, .control-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #D0D0D0;
+            border-radius: 48px;
+            font-family: '微软雅黑', sans-serif;
+            font-size: 14px;
+            background: #FFFFFF;
+        }
+
+        .control-group input:focus, .control-group select:focus {
+            outline: none;
+            border-color: #000000;
+        }
+
+        .current-location {
+            background: #F8F8F8;
+            padding: 8px 16px;
+            border-radius: 48px;
+            font-size: 14px;
+            color: #1F1F1F;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .map-layout {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .map-container {
+            flex: 2;
+            min-width: 280px;
+            height: 520px;
+            border-radius: 32px;
+            overflow: hidden;
+            border: 1px solid #EAEAEA;
+            background: #F9F9F9;
+        }
+
+        .venues-list {
+            flex: 1;
+            min-width: 280px;
+            background: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            border-radius: 32px;
+            padding: 16px 0;
+            height: 520px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-header {
+            padding: 0 20px 12px 20px;
+            font-weight: 700;
+            font-size: 18px;
+            border-bottom: 1px solid #EFEFEF;
+            margin-bottom: 8px;
+        }
+
+        .venue-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #F0F0F0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .venue-item:hover {
+            background: #F9F9F9;
+        }
+
+        .venue-name {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .venue-distance {
+            font-size: 12px;
+            color: #666;
+            background: #F0F0F0;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+
+        .venue-address {
+            font-size: 13px;
+            color: #5A5A5A;
+            margin-bottom: 10px;
+            word-break: break-all;
+        }
+
+        .nav-btn {
+            background: none;
+            border: 1px solid #CCCCCC;
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #000;
+            cursor: pointer;
+        }
+
+        .empty-tip {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .footer {
+            background-color: #F8F8F8;
+            border-top: 1px solid #EAEAEA;
+            padding: 24px 0;
+            text-align: center;
+            font-size: 13px;
+            color: #5A5A5A;
+            margin-top: 40px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 32px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 24px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 16px;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #D0D0D0;
+            border-radius: 48px;
+            font-size: 14px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 860px) {
+            .map-container, .venues-list {
+                flex: 1 1 100%;
+                height: 420px;
+            }
+            .control-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .current-location {
+                margin-left: 0;
+                justify-content: center;
+            }
+        }
+    </style>
+    <script src="https://esm.sh/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <div class="navbar">
+            <a href="index.html" class="logo">ApexFit</a>
+            <ul class="nav-links">
+                <li><a href="plan.html">方案设计</a></li>
+                <li><a href="map.html" class="active">场地查询</a></li>
+                <li><a href="social.html">运动社区</a></li>
+            </ul>
+            <div class="user-area" id="userArea">
+                <button class="btn-outline-small" id="loginBtn">登录</button>
+                <button class="btn-dark-small" id="registerBtn">注册</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="map-section">
+    <div class="container">
+        <div class="control-panel">
+            <div class="control-group">
+                <label>🔍 搜索关键词</label>
+                <input type="text" id="searchKeyword" placeholder="健身房 / 瑜伽馆 / 运动中心" value="健身房">
+            </div>
+            <div class="control-group">
+                <label>📏 搜索半径</label>
+                <select id="searchRadius">
+                    <option value="1000">1公里内</option>
+                    <option value="3000">3公里内</option>
+                    <option value="5000" selected>5公里内</option>
+                    <option value="10000">10公里内</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>📍 手动设置位置 (地址/地标)</label>
+                <input type="text" id="manualAddress" placeholder="例如: 长沙市芙蓉区五一大道">
+            </div>
+            <button id="searchBtn" class="btn-dark-small">开始搜索</button>
+            <button id="setLocationBtn" class="btn-outline-small">设置此位置</button>
+            <div class="current-location" id="currentLocationDisplay">
+                <span>📍</span><span id="locationName">未获取位置</span>
+            </div>
+        </div>
+
+        <div class="map-layout">
+            <div id="mapContainer" class="map-container"></div>
+            <div class="venues-list">
+                <div class="list-header">🏋️ 附近运动场所推荐</div>
+                <div id="venueListContent" style="flex:1; overflow-y: auto;">
+                    <div class="empty-tip">点击「开始搜索」或允许定位后显示附近场馆</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 登录/注册模态框 -->
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="loginForm">
+            <h3>登录</h3>
+            <input type="text" id="loginUsername" placeholder="用户名">
+            <input type="password" id="loginPassword" placeholder="密码">
+            <button class="btn-dark" id="doLoginBtn">登录</button>
+            <p>没有账号？ <a id="switchToRegister">立即注册</a></p>
+        </div>
+        <div id="registerForm" style="display:none;">
+            <h3>注册</h3>
+            <input type="text" id="regUsername" placeholder="用户名">
+            <input type="password" id="regPassword" placeholder="密码">
+            <input type="password" id="regConfirmPassword" placeholder="确认密码">
+            <button class="btn-dark" id="doRegisterBtn">注册</button>
+            <p>已有账号？ <a id="switchToLogin">返回登录</a></p>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2025 ApexFit — 找到最适合你的运动空间</p>
+    </div>
+</footer>
+
+<script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    // Supabase 配置（与社交页相同）
+    const SUPABASE_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentUser = null;
+
+    // 高德地图相关变量
+    let map = null;
+    let placeSearch = null;
+    let geocoder = null;
+    let currentMarkers = [];
+    let currentCenter = null;
+    let currentLocationAddress = "";
+
+    // 获取 DOM 元素
+    const userArea = document.getElementById('userArea');
+    const authModal = document.getElementById('authModal');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const closeBtn = document.querySelector('.close');
+    const doLoginBtn = document.getElementById('doLoginBtn');
+    const doRegisterBtn = document.getElementById('doRegisterBtn');
+    const switchToRegister = document.getElementById('switchToRegister');
+    const switchToLogin = document.getElementById('switchToLogin');
+    const searchBtn = document.getElementById('searchBtn');
+    const setLocationBtn = document.getElementById('setLocationBtn');
+    const searchKeyword = document.getElementById('searchKeyword');
+    const searchRadius = document.getElementById('searchRadius');
+    const manualAddress = document.getElementById('manualAddress');
+    const locationNameSpan = document.getElementById('locationName');
+    const venueListContent = document.getElementById('venueListContent');
+
+    // ==================== 认证逻辑 ====================
+    function showModal() { authModal.style.display = 'block'; }
+    function hideModal() { authModal.style.display = 'none'; }
+
+    async function handleRegister() {
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regConfirmPassword').value;
+        if (!username || !password) { alert('请填写完整'); return; }
+        if (password !== confirm) { alert('密码不一致'); return; }
+        if (password.length < 6) { alert('密码至少6位'); return; }
+        try {
+            const email = username + '@apexfit.local';
+            const { data, error } = await supabase.auth.signUp({
+                email: email, password: password,
+                options: { data: { username: username } }
+            });
+            if (error) throw error;
+            currentUser = { id: data.user.id, username: username };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('注册成功');
+            hideModal();
+            updateUI();
+        } catch (err) { alert('注册失败: ' + err.message); }
+    }
+
+    async function handleLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if (!username || !password) { alert('请填写完整'); return; }
+        try {
+            const email = username + '@apexfit.local';
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            currentUser = { id: data.user.id, username: username };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('登录成功');
+            hideModal();
+            updateUI();
+        } catch (err) { alert('登录失败: ' + err.message); }
+    }
+
+    function handleLogout() {
+        supabase.auth.signOut();
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        updateUI();
+        alert('已退出');
+    }
+
+    function updateUI() {
+        if (currentUser) {
+            userArea.innerHTML = `
+                <span class="username-btn" id="profileBtn">${currentUser.username}</span>
+                <button class="btn-outline-small" id="logoutBtn">退出</button>
+            `;
+            document.getElementById('profileBtn')?.addEventListener('click', () => { window.location.href = 'profile.html'; });
+            document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
+        } else {
+            userArea.innerHTML = `
+                <button class="btn-outline-small" id="loginBtn">登录</button>
+                <button class="btn-dark-small" id="registerBtn">注册</button>
+            `;
+            document.getElementById('loginBtn')?.addEventListener('click', () => {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+                showModal();
+            });
+            document.getElementById('registerBtn')?.addEventListener('click', () => {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+                showModal();
+            });
+        }
+    }
+
+    async function restoreSession() {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) currentUser = JSON.parse(stored);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) { currentUser = null; localStorage.removeItem('currentUser'); }
+        updateUI();
+    }
+
+    // ==================== 高德地图逻辑 ====================
+    function initMap(useGeolocation) {
+        map = new AMap.Map('mapContainer', {
+            zoom: 13,
+            center: [112.979, 28.235],
+            resizeEnable: true,
+            viewMode: '2D'
+        });
+        map.addControl(new AMap.ToolBar({ position: 'RT' }));
+
+        AMap.plugin(['AMap.Geocoder'], function() {
+            geocoder = new AMap.Geocoder({ city: "全国", radius: 1000 });
+        });
+
+        if (useGeolocation) {
+            getCurrentPositionAndSearch();
+        } else {
+            updateLocationDisplay("默认位置 · 长沙市五一广场", [112.979, 28.235]);
+            currentCenter = { lng: 112.979, lat: 28.235 };
+            performSearchWithCenter(currentCenter);
+        }
+    }
+
+    function getCurrentPositionAndSearch() {
+        AMap.plugin('AMap.Geolocation', function() {
+            const geolocation = new AMap.Geolocation({
+                enableHighAccuracy: true,
+                timeout: 10000,
+                zoomToAccuracy: true,
+                buttonPosition: 'RB',
+                showMarker: true,
+                showCircle: true
+            });
+            map.addControl(geolocation);
+            geolocation.getCurrentPosition((status, result) => {
+                if (status === 'complete') {
+                    const { position } = result;
+                    const lng = position.lng;
+                    const lat = position.lat;
+                    currentCenter = { lng, lat };
+                    reverseGeocode(lng, lat, (address) => {
+                        updateLocationDisplay(address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`, [lng, lat]);
+                        performSearchWithCenter(currentCenter);
+                    });
+                    map.setCenter([lng, lat]);
+                    map.setZoom(14);
+                } else {
+                    console.warn('定位失败: ' + result.message);
+                    updateLocationDisplay("定位失败，使用默认位置", [112.979, 28.235]);
+                    currentCenter = { lng: 112.979, lat: 28.235 };
+                    performSearchWithCenter(currentCenter);
+                }
+            });
+        });
+    }
+
+    function reverseGeocode(lng, lat, callback) {
+        if (!geocoder) {
+            setTimeout(() => reverseGeocode(lng, lat, callback), 200);
+            return;
+        }
+        geocoder.getAddress([lng, lat], (status, result) => {
+            if (status === 'complete' && result.regeocode) {
+                callback(result.regeocode.formattedAddress);
+            } else {
+                callback(null);
+            }
+        });
+    }
+
+    function updateLocationDisplay(address, coords) {
+        currentLocationAddress = address;
+        locationNameSpan.innerText = address || `${coords[1].toFixed(4)}, ${coords[0].toFixed(4)}`;
+    }
+
+    function setManualLocation() {
+        const addressInput = manualAddress.value.trim();
+        if (!addressInput) { alert("请输入有效的地名或地址"); return; }
+        if (!geocoder) { alert("地理编码服务尚未就绪，请稍后再试"); return; }
+        geocoder.getLocation(addressInput, (status, result) => {
+            if (status === 'complete' && result.geocodes.length > 0) {
+                const location = result.geocodes[0].location;
+                const lng = location.lng;
+                const lat = location.lat;
+                currentCenter = { lng, lat };
+                const formattedAddress = result.geocodes[0].formattedAddress;
+                updateLocationDisplay(formattedAddress || addressInput, [lng, lat]);
+                map.setCenter([lng, lat]);
+                map.setZoom(14);
+                performSearchWithCenter(currentCenter);
+            } else {
+                alert("未找到该地址，请尝试更具体的地标或街道名");
+            }
+        });
+    }
+
+    function performSearch() {
+        if (!currentCenter) { alert("请先定位或设置有效位置"); return; }
+        performSearchWithCenter(currentCenter);
+    }
+
+    function performSearchWithCenter(center) {
+        const keyword = searchKeyword.value.trim();
+        if (!keyword) { alert("请输入搜索关键词"); return; }
+        const radius = parseInt(searchRadius.value, 10);
+        venueListContent.innerHTML = '<div class="empty-tip">⏳ 正在搜索附近场馆...</div>';
+        clearMarkers();
+
+        AMap.plugin(['AMap.PlaceSearch'], function() {
+            const placeSearchInstance = new AMap.PlaceSearch({
+                type: "体育休闲服务|健身中心|运动场馆",
+                pageSize: 30,
+                pageIndex: 1,
+                city: "全国",
+                extensions: "all"
+            });
+            placeSearchInstance.searchNearBy(keyword, [center.lng, center.lat], radius, (status, result) => {
+                if (status === 'complete' && result.poiList && result.poiList.pois.length > 0) {
+                    const pois = result.poiList.pois;
+                    renderVenueList(pois);
+                    addMarkersToMap(pois);
+                } else {
+                    venueListContent.innerHTML = `<div class="empty-tip">😔 未找到相关场所，尝试扩大半径或更换关键词</div>`;
+                }
+            });
+        });
+    }
+
+    function renderVenueList(pois) {
+        if (!pois || pois.length === 0) {
+            venueListContent.innerHTML = '<div class="empty-tip">暂无结果，请调整搜索条件</div>';
+            return;
+        }
+        let html = '';
+        pois.forEach((poi) => {
+            const name = poi.name || '未命名场馆';
+            const address = poi.address || '地址不详';
+            let distanceText = '';
+            if (poi.distance) {
+                const dist = poi.distance;
+                if (dist < 1000) distanceText = `${Math.round(dist)}米`;
+                else distanceText = `${(dist / 1000).toFixed(1)}公里`;
+            } else {
+                distanceText = '距离未知';
+            }
+            const lng = poi.location.lng;
+            const lat = poi.location.lat;
+            const navUrl = `https://uri.amap.com/navigation?to=${lng},${lat},${encodeURIComponent(name)}&mode=car&callnative=1`;
+            html += `
+                <div class="venue-item" data-lng="${lng}" data-lat="${lat}" data-name="${escapeHtml(name)}">
+                    <div class="venue-name">
+                        <span>${escapeHtml(name)}</span>
+                        <span class="venue-distance">${distanceText}</span>
+                    </div>
+                    <div class="venue-address">📌 ${escapeHtml(address)}</div>
+                    <button class="nav-btn" data-navurl="${navUrl}">🧭 导航</button>
+                </div>
+            `;
+        });
+        venueListContent.innerHTML = html;
+        // 绑定列表项事件
+        document.querySelectorAll('.venue-item').forEach(item => {
+            const lng = parseFloat(item.dataset.lng);
+            const lat = parseFloat(item.dataset.lat);
+            const name = item.dataset.name;
+            item.addEventListener('click', (e) => {
+                if (e.target.classList && e.target.classList.contains('nav-btn')) return;
+                map.setCenter([lng, lat]);
+                map.setZoom(16);
+                const infoWindow = new AMap.InfoWindow({
+                    content: `<div style="padding:6px 12px;"><strong>${escapeHtml(name)}</strong><br>点击导航按钮可前往</div>`,
+                    offset: new AMap.Pixel(0, -30)
+                });
+                infoWindow.open(map, [lng, lat]);
+                setTimeout(() => infoWindow.close(), 3000);
+            });
+            const navBtn = item.querySelector('.nav-btn');
+            if (navBtn) {
+                navBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.open(navBtn.dataset.navurl, '_blank');
+                });
+            }
+        });
+    }
+
+    function addMarkersToMap(pois) {
+        clearMarkers();
+        const markers = [];
+        pois.forEach(poi => {
+            const { lng, lat } = poi.location;
+            const marker = new AMap.Marker({
+                position: [lng, lat],
+                title: poi.name,
+                map: map,
+                anchor: 'bottom-center',
+                icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
+            });
+            marker.on('click', () => {
+                const infoWindow = new AMap.InfoWindow({
+                    content: `<div style="padding:8px 12px;"><strong>${escapeHtml(poi.name)}</strong><br>${escapeHtml(poi.address)}<br><a href="https://uri.amap.com/navigation?to=${lng},${lat},${encodeURIComponent(poi.name)}&mode=car" target="_blank" style="color:#000;">🚗 点击导航</a></div>`,
+                    offset: new AMap.Pixel(0, -30)
+                });
+                infoWindow.open(map, [lng, lat]);
+            });
+            markers.push(marker);
+        });
+        currentMarkers = markers;
+        if (pois.length > 0) {
+            const bounds = new AMap.Bounds();
+            pois.forEach(poi => bounds.extend([poi.location.lng, poi.location.lat]));
+            map.setBounds(bounds, false, [60, 60, 60, 60]);
+        }
+    }
+
+    function clearMarkers() {
+        if (currentMarkers.length) {
+            currentMarkers.forEach(marker => marker.setMap(null));
+            currentMarkers = [];
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // ==================== 页面初始化 ====================
+    window.onload = function() {
+        const allowLocation = confirm("📍 隐私提示\n我们将要收集您的位置信息，以便为您推荐附近的运动场所。\n点击「确定」开启定位服务，拒绝后将使用默认位置。");
+        initMap(allowLocation);
+    };
+
+    searchBtn.addEventListener('click', performSearch);
+    setLocationBtn.addEventListener('click', setManualLocation);
+
+    // 模态框事件绑定
+    switchToRegister?.addEventListener('click', (e) => { e.preventDefault(); document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'block'; });
+    switchToLogin?.addEventListener('click', (e) => { e.preventDefault(); document.getElementById('loginForm').style.display = 'block'; document.getElementById('registerForm').style.display = 'none'; });
+    doLoginBtn?.addEventListener('click', handleLogin);
+    doRegisterBtn?.addEventListener('click', handleRegister);
+    closeBtn?.addEventListener('click', hideModal);
+    window.addEventListener('click', (e) => { if (e.target === authModal) hideModal(); });
+
+    restoreSession();
+</script>
+</body>
+</html>

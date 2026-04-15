@@ -420,10 +420,8 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // OpenRouter 配置
-    const OPENROUTER_API_KEY = "to be filled";
-    const MODEL = "z-ai/glm-4.5-air:free";
-    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+    // Edge Function URL (用户需部署函数 'generate-plan')
+    const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/generate-plan`;
 
     let currentUser = null;
     let generatedPlanText = '';
@@ -496,7 +494,7 @@
         return { basic, goal, ability, constraint };
     }
 
-    // 关键修复：确保 profiles 记录存在
+    // 确保 profiles 记录存在
     async function ensureProfileExists(userId, username) {
         const { data: existing, error: checkError } = await supabase
             .from('profiles')
@@ -628,7 +626,7 @@
         if (currentUser) await ensureProfileExists(currentUser.id, currentUser.username);
     }
 
-    // ==================== AI 调用 ====================
+    // ==================== AI 调用（通过 Supabase Edge Function）====================
     function buildPromptForAI(data) {
         const age = calculateAge(data.birth);
         const bmi = calculateBMI(parseFloat(data.height), parseFloat(data.weight));
@@ -671,38 +669,30 @@
 
     async function callAIToGeneratePlan(userData) {
         const prompt = buildPromptForAI(userData);
-        const requestBody = {
-            model: MODEL,
-            messages: [
-                { role: "system", content: "你是一位顶尖的运动科学专家，擅长根据用户多维数据定制专属训练体系。回答需结构化、专业且鼓励用户，避免危险动作。请使用中文输出。" },
-                { role: "user", content: prompt }
-            ],
-            temperature: 0.7,
-            max_tokens: 2000
-        };
-        const response = await fetch(API_URL, {
+        
+        // 调用 Supabase Edge Function，传递用户档案和提示词
+        const response = await fetch(EDGE_FUNCTION_URL, {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
                 "Content-Type": "application/json",
-                "HTTP-Referer": "https://apexfit.github.io",
-                "X-Title": "ApexFit Training Plan"
+                "Authorization": `Bearer ${SUPABASE_ANON_KEY}`  // 允许匿名调用，但建议限制
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify({ prompt })
         });
+
         if (!response.ok) {
-            let errorDetail = `API 请求失败: ${response.status}`;
+            let errorDetail = `Edge Function 请求失败: ${response.status}`;
             try {
                 const errData = await response.json();
-                errorDetail = errData.error?.message || errorDetail;
+                errorDetail = errData.error || errorDetail;
             } catch(e) {}
             throw new Error(errorDetail);
         }
         const result = await response.json();
-        if (!result.choices || !result.choices[0] || !result.choices[0].message) {
-            throw new Error("API 返回数据异常，请稍后重试");
+        if (!result.content) {
+            throw new Error("Edge Function 返回数据异常，缺少 content 字段");
         }
-        return result.choices[0].message.content;
+        return result.content;
     }
 
     async function showAIPlanResult() {
@@ -758,7 +748,7 @@
         });
     }
 
-    // ==================== 表单渲染逻辑 ====================
+    // ==================== 表单渲染逻辑（完全不变）====================
     function renderCurrentStep() {
         if (!stepsContainer) return;
         const step = STEPS[currentStepIndex];

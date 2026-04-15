@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ApexFit | 专属训练方案定制 · AI 智能生成</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-family: '微软雅黑', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header {
+            background-color: #FFFFFF;
+            border-bottom: 1px solid #E6E6E6;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            width: 100%;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #000000;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 36px;
+            align-items: center;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            color: #1A1A1A;
+            transition: all 0.2s ease;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links li a:hover {
+            color: #000000;
+            border-bottom-color: #000000;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .username-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: '微软雅黑', sans-serif;
+            color: #000;
+        }
+
+        .btn-outline-small {
+            background: transparent;
+            border: 1px solid #AAAAAA;
+            color: #2C2C2C;
+            padding: 8px 16px;
+            border-radius: 48px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-dark-small {
+            background: #000000;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 48px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .customizer {
+            padding: 48px 0 80px;
+            min-height: 70vh;
+        }
+
+        .step-progress {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 1px solid #EFEFEF;
+            padding-bottom: 20px;
+        }
+
+        .step-badge {
+            font-size: 14px;
+            color: #888;
+            background: #F5F5F5;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+
+        .step-badge span {
+            font-weight: 700;
+            color: #000;
+        }
+
+        .step-card {
+            background: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            border-radius: 32px;
+            padding: 32px 28px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.02);
+        }
+
+        .step-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 28px;
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 14px;
+            display: block;
+            color: #1F1F1F;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #F9F9F9;
+            padding: 8px 20px;
+            border-radius: 60px;
+            border: 1px solid #E2E2E2;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-item input {
+            accent-color: #000;
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .option-item label {
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #2C2C2C;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"], select {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 16px;
+            border: 1px solid #D0D0D0;
+            border-radius: 28px;
+            font-family: '微软雅黑', sans-serif;
+            background: #FFFFFF;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #000000;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+        }
+
+        .inline-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .inline-row .form-group {
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 16px;
+        }
+
+        .btn-outline, .btn-dark {
+            padding: 12px 28px;
+            border-radius: 48px;
+            font-family: '微软雅黑', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+            background: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #AAAAAA;
+            color: #2C2C2C;
+        }
+
+        .btn-outline:hover {
+            border-color: #000;
+            background: #F5F5F5;
+        }
+
+        .btn-dark {
+            background: #000000;
+            color: #FFFFFF;
+            border: 1px solid #000;
+        }
+
+        .btn-dark:hover {
+            background: #FFFFFF;
+            color: #000000;
+            transform: translateY(-2px);
+        }
+
+        .result-area {
+            background: #FFFFFF;
+            border: 1px solid #EAEAEA;
+            border-radius: 32px;
+            padding: 32px;
+            margin-top: 20px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            border-left: 6px solid #000;
+            padding-left: 18px;
+        }
+
+        .ai-response {
+            background: #FAFAFA;
+            border-radius: 28px;
+            padding: 28px;
+            margin: 24px 0;
+            border: 1px solid #ECECEC;
+            white-space: pre-wrap;
+            font-family: '微软雅黑', monospace;
+            line-height: 1.6;
+            font-size: 16px;
+            color: #1E1E1E;
+        }
+
+        .data-summary {
+            background: #F5F5F5;
+            border-radius: 24px;
+            padding: 20px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #3A3A3A;
+            border-left: 3px solid #000;
+        }
+
+        .data-summary h4 {
+            font-weight: 700;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .reset-btn, .continue-btn {
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 48px 20px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #E0E0E0;
+            border-top: 4px solid #000000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #FFF0F0;
+            color: #B00020;
+            padding: 18px;
+            border-radius: 28px;
+            text-align: center;
+            border: 1px solid #FFCCCC;
+        }
+
+        .small-note {
+            font-size: 13px;
+            color: #888;
+            margin-top: 6px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 32px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 24px;
+            position: relative;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #D0D0D0;
+            border-radius: 48px;
+            font-size: 14px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .footer {
+            background-color: #F8F8F8;
+            border-top: 1px solid #EAEAEA;
+            padding: 24px 0;
+            text-align: center;
+            font-size: 13px;
+            color: #5A5A5A;
+            margin-top: 40px;
+        }
+    </style>
+    <script src="https://esm.sh/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <div class="navbar">
+            <a href="index.html" class="logo">ApexFit</a>
+            <ul class="nav-links">
+                <li><a href="plan.html">方案设计</a></li>
+                <li><a href="map.html">场地查询</a></li>
+                <li><a href="social.html">运动社区</a></li>
+            </ul>
+            <div class="user-area" id="userArea">
+                <button class="btn-outline-small" id="loginBtn">登录</button>
+                <button class="btn-dark-small" id="registerBtn">注册</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="customizer">
+    <div class="container">
+        <div id="stepsContainer"></div>
+        <div id="resultContainer" class="result-area hidden">
+            <div class="result-title">✨ 你的专属训练体系 · AI 智能生成</div>
+            <div id="aiResultContent"></div>
+            <div class="continue-btn">
+                <button id="continueBtn" class="btn-dark">继续 →</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 登录/注册模态框 -->
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="loginForm">
+            <h3>登录</h3>
+            <input type="text" id="loginUsername" placeholder="用户名">
+            <input type="password" id="loginPassword" placeholder="密码">
+            <button class="btn-dark" id="doLoginBtn">登录</button>
+            <p>没有账号？ <a id="switchToRegister">立即注册</a></p>
+        </div>
+        <div id="registerForm" style="display:none;">
+            <h3>注册</h3>
+            <input type="text" id="regUsername" placeholder="用户名">
+            <input type="password" id="regPassword" placeholder="密码">
+            <input type="password" id="regConfirmPassword" placeholder="确认密码">
+            <button class="btn-dark" id="doRegisterBtn">注册</button>
+            <p>已有账号？ <a id="switchToLogin">返回登录</a></p>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2025 ApexFit — 专属训练体系</p>
+    </div>
+</footer>
+
+<script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    // Supabase 配置
+    const SUPABASE_URL = 'https://mlvyibpftjdseaodlqff.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sdnlpYnBmdGpkc2Vhb2RscWZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjY4MzIsImV4cCI6MjA5MTY0MjgzMn0.fZiHQ9IHIO6dkt7nNxmu5eNmkuYfxjlw6mKMX-eTI6I';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // OpenRouter 配置
+    const OPENROUTER_API_KEY = "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";
+    const MODEL = "z-ai/glm-4.5-air:free";
+    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+    let currentUser = null;
+    let generatedPlanText = '';      // 存储AI生成的方案文本
+    let currentPlanSummary = null;    // 存储档案摘要
+
+    // 步骤定义（与之前相同）
+    const STEPS = [
+        { id: "basic", title: "基础信息", fields: ["birth", "gender", "height", "weight"] },
+        { id: "injury", title: "伤病困扰", fields: ["injury"] },
+        { id: "bodytype", title: "体型", fields: ["bodyType"] },
+        { id: "goal", title: "运动目标", fields: ["fitnessGoal"] },
+        { id: "focus", title: "重点改善部位", fields: ["focusArea"] },
+        { id: "extraSports", title: "额外运动类型", fields: ["extraSports"] },
+        { id: "duration", title: "每日运动时长", fields: ["duration"] },
+        { id: "planReq", title: "计划要求", fields: ["planRequirements"] },
+        { id: "equipment", title: "运动器械", fields: ["equipment"] },
+        { id: "avoidMoves", title: "不希望出现的动作", fields: ["avoidMoves"] },
+        { id: "pushup", title: "运动能力 · 俯卧撑", fields: ["pushupAbility"] },
+        { id: "squat", title: "运动能力 · 深蹲", fields: ["squatAbility"] },
+        { id: "curl", title: "运动能力 · 卷腹", fields: ["curlAbility"] },
+        { id: "stamina", title: "上楼疲累程度", fields: ["stairStamina"] }
+    ];
+
+    let userData = {
+        birth: "", gender: "", height: "", weight: "",
+        injury: [],
+        bodyType: "",
+        fitnessGoal: "",
+        focusArea: "",
+        extraSports: [],
+        duration: "",
+        planRequirements: [],
+        equipment: [],
+        avoidMoves: [],
+        pushupAbility: "",
+        squatAbility: "",
+        curlAbility: "",
+        stairStamina: ""
+    };
+
+    let currentStepIndex = 0;
+    const totalSteps = STEPS.length;
+
+    const stepsContainer = document.getElementById('stepsContainer');
+    const resultContainer = document.getElementById('resultContainer');
+    const aiResultContent = document.getElementById('aiResultContent');
+
+    // ==================== 辅助函数 ====================
+    function calculateAge(birthDateStr) {
+        if (!birthDateStr) return null;
+        const today = new Date();
+        const birth = new Date(birthDateStr);
+        let age = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+        return age;
+    }
+
+    function calculateBMI(heightCm, weightKg) {
+        if (!heightCm || !weightKg) return null;
+        const heightM = heightCm / 100;
+        const bmi = weightKg / (heightM * heightM);
+        return bmi.toFixed(1);
+    }
+
+    // 构建档案摘要字符串（用于保存和显示）
+    function buildPlanSummary(data) {
+        const age = calculateAge(data.birth) || '未知';
+        const bmi = calculateBMI(parseFloat(data.height), parseFloat(data.weight)) || '--';
+        const basic = `${age}岁 · ${data.gender} · ${data.height}cm / ${data.weight}kg · BMI ${bmi}`;
+        const goal = `${data.fitnessGoal} · 重点改善 ${data.focusArea}`;
+        const ability = `俯卧撑:${data.pushupAbility} · 深蹲:${data.squatAbility} · 卷腹:${data.curlAbility}`;
+        let injuryText = '不存在伤病困扰';
+        if (data.injury && data.injury.length && !data.injury.includes('不存在伤病困扰')) {
+            injuryText = data.injury.join(',');
+        }
+        let equipText = '以上都不使用';
+        if (data.equipment && data.equipment.length && !data.equipment.includes('以上都不使用')) {
+            equipText = data.equipment.join(',');
+        }
+        const constraint = `每日${data.duration} · 器材:${equipText} · 伤病:${injuryText}`;
+        return { basic, goal, ability, constraint };
+    }
+
+    // 保存档案到 Supabase profiles 表
+    async function savePlanToProfile(userId, planSummary) {
+        const { error } = await supabase.from('profiles').upsert({
+            id: userId,
+            username: currentUser.username,
+            custom_plan: planSummary,
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+        if (error) console.error('保存档案失败', error);
+        return !error;
+    }
+
+    // ==================== 认证与UI ====================
+    const userArea = document.getElementById('userArea');
+    const authModal = document.getElementById('authModal');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const closeBtn = document.querySelector('.close');
+    const doLoginBtn = document.getElementById('doLoginBtn');
+    const doRegisterBtn = document.getElementById('doRegisterBtn');
+    const switchToRegister = document.getElementById('switchToRegister');
+    const switchToLogin = document.getElementById('switchToLogin');
+
+    function showModal() { authModal.style.display = 'block'; }
+    function hideModal() { authModal.style.display = 'none'; }
+
+    async function handleRegister() {
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regConfirmPassword').value;
+        if (!username || !password) { alert('请填写完整'); return; }
+        if (password !== confirm) { alert('密码不一致'); return; }
+        if (password.length < 6) { alert('密码至少6位'); return; }
+        try {
+            const email = username + '@apexfit.local';
+            const { data, error } = await supabase.auth.signUp({
+                email: email, password: password,
+                options: { data: { username: username } }
+            });
+            if (error) throw error;
+            currentUser = { id: data.user.id, username: username };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('注册成功');
+            hideModal();
+            updateUI();
+        } catch (err) { alert('注册失败: ' + err.message); }
+    }
+
+    async function handleLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        if (!username || !password) { alert('请填写完整'); return; }
+        try {
+            const email = username + '@apexfit.local';
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            currentUser = { id: data.user.id, username: username };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('登录成功');
+            hideModal();
+            updateUI();
+        } catch (err) { alert('登录失败: ' + err.message); }
+    }
+
+    function handleLogout() {
+        supabase.auth.signOut();
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        updateUI();
+        alert('已退出');
+        location.reload(); // 刷新页面重置状态
+    }
+
+    function updateUI() {
+        if (currentUser) {
+            userArea.innerHTML = `
+                <span class="username-btn" id="profileBtn">${currentUser.username}</span>
+                <button class="btn-outline-small" id="logoutBtn">退出</button>
+            `;
+            document.getElementById('profileBtn')?.addEventListener('click', () => { window.location.href = 'profile.html'; });
+            document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
+        } else {
+            userArea.innerHTML = `
+                <button class="btn-outline-small" id="loginBtn">登录</button>
+                <button class="btn-dark-small" id="registerBtn">注册</button>
+            `;
+            document.getElementById('loginBtn')?.addEventListener('click', () => {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+                showModal();
+            });
+            document.getElementById('registerBtn')?.addEventListener('click', () => {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+                showModal();
+            });
+        }
+    }
+
+    async function restoreSession() {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) currentUser = JSON.parse(stored);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) { currentUser = null; localStorage.removeItem('currentUser'); }
+        updateUI();
+        // 如果已经显示了结果且需要登录才能保存，等待用户操作
+    }
+
+    // ==================== AI 调用 ====================
+    function buildPromptForAI(data) {
+        const age = calculateAge(data.birth);
+        const bmi = calculateBMI(parseFloat(data.height), parseFloat(data.weight));
+        const injuries = data.injury && data.injury.length ? data.injury.join(', ') : '无';
+        const extraSports = data.extraSports && data.extraSports.length ? data.extraSports.join(', ') : '无';
+        const planReqs = data.planRequirements && data.planRequirements.length ? data.planRequirements.join(', ') : '无特殊要求';
+        const equipment = data.equipment && data.equipment.length ? data.equipment.join(', ') : '无器械 (自重训练)';
+        const avoidMoves = data.avoidMoves && data.avoidMoves.length ? data.avoidMoves.join(', ') : '无禁忌动作';
+
+        return `你是一位顶级的运动科学专家与私人训练体系设计师，专为 ApexFit 打造极致个性化方案。请根据以下用户信息，生成一份完整、可执行的「专属训练体系方案」。要求：内容详实、分版块（训练频率、动作推荐、每周安排、注意事项、恢复建议等），语气专业且鼓舞人心，使用中文，总字数 500~800 字。
+
+【用户档案】
+- 年龄：${age || '未知'} 岁
+- 性别：${data.gender || '未填'}
+- 身高：${data.height} cm
+- 体重：${data.weight} kg
+- BMI：${bmi || '计算中'} ${bmi ? (bmi > 24 ? '(体重偏重，建议减重为主)' : (bmi < 18.5 ? '(体重偏轻，需加强营养与力量)' : '(标准范围，适合塑形与健康维持)')) : ''}
+- 伤病困扰：${injuries}
+- 体型：${data.bodyType}
+- 运动目标：${data.fitnessGoal}
+- 重点改善部位：${data.focusArea}
+- 额外运动偏好：${extraSports}
+- 每日可投入时长：${data.duration}
+- 计划要求：${planReqs}
+- 可用器械：${equipment}
+- 回避动作：${avoidMoves}
+- 俯卧撑能力：${data.pushupAbility}
+- 深蹲能力：${data.squatAbility}
+- 卷腹能力：${data.curlAbility}
+- 上楼疲劳程度：${data.stairStamina}
+
+请基于以上信息，设计一套循序渐进的训练体系，包含：
+1. **训练频率与周期建议** (每周训练几天，休息安排)
+2. **具体动作库** (根据能力与器械限制，列出 4-6 个核心动作，说明组数/次数/强度)
+3. **每周日程范例** (举例一天的完整训练内容)
+4. **注意事项与伤病预防** (针对伤病/禁忌动作/特殊需求)
+5. **营养与恢复小贴士** (简略但实用)
+
+输出格式请使用清晰的标题分段，避免使用markdown代码块，直接用自然段落 + 项目符号（可用 - 或 •）。确保方案安全、科学、个性化。`;
+    }
+
+    async function callAIToGeneratePlan(userData) {
+        const prompt = buildPromptForAI(userData);
+        const requestBody = {
+            model: MODEL,
+            messages: [
+                { role: "system", content: "你是一位顶尖的运动科学专家，擅长根据用户多维数据定制专属训练体系。回答需结构化、专业且鼓励用户，避免危险动作。请使用中文输出。" },
+                { role: "user", content: prompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 2000
+        };
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://apexfit.github.io",
+                "X-Title": "ApexFit Training Plan"
+            },
+            body: JSON.stringify(requestBody)
+        });
+        if (!response.ok) {
+            let errorDetail = `API 请求失败: ${response.status}`;
+            try {
+                const errData = await response.json();
+                errorDetail = errData.error?.message || errorDetail;
+            } catch(e) {}
+            throw new Error(errorDetail);
+        }
+        const result = await response.json();
+        if (!result.choices || !result.choices[0] || !result.choices[0].message) {
+            throw new Error("API 返回数据异常，请稍后重试");
+        }
+        return result.choices[0].message.content;
+    }
+
+    async function showAIPlanResult() {
+        stepsContainer.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
+        aiResultContent.innerHTML = `
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p style="font-weight: 500;">✨ AI 正在为你量身打造专属训练体系...</p>
+                <p style="color: #666; font-size: 14px; margin-top: 8px;">基于运动科学模型，深度生成个性化方案</p>
+            </div>
+        `;
+        try {
+            const aiPlanText = await callAIToGeneratePlan(userData);
+            generatedPlanText = aiPlanText;
+            // 构建档案摘要
+            currentPlanSummary = buildPlanSummary(userData);
+            const summaryHtml = `
+                <div class="data-summary">
+                    <h4>📋 你的定制档案</h4>
+                    <p><strong>基础</strong> ${currentPlanSummary.basic}<br>
+                    <strong>目标</strong> ${currentPlanSummary.goal}<br>
+                    <strong>能力</strong> ${currentPlanSummary.ability}<br>
+                    <strong>约束</strong> ${currentPlanSummary.constraint}</p>
+                </div>
+            `;
+            const aiContent = `
+                <div class="ai-response">
+                    <div style="font-weight:800; margin-bottom:16px; font-size:20px;">🤖 ApexFit AI · 专属训练体系</div>
+                    <div style="white-space: pre-wrap; line-height: 1.65;">${escapeHtml(aiPlanText)}</div>
+                </div>
+                ${summaryHtml}
+            `;
+            aiResultContent.innerHTML = aiContent;
+        } catch (err) {
+            console.error(err);
+            aiResultContent.innerHTML = `
+                <div class="error-message">
+                    ❌ 生成方案失败：${err.message}<br><br>
+                    <button id="retryAiBtn" class="btn-dark" style="padding: 8px 24px; font-size: 16px;">重试生成</button>
+                </div>
+            `;
+            document.getElementById('retryAiBtn')?.addEventListener('click', () => showAIPlanResult());
+        }
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // ==================== 表单逻辑 ====================
+    function renderCurrentStep() {
+        if (!stepsContainer) return;
+        const step = STEPS[currentStepIndex];
+        const stepNumber = currentStepIndex + 1;
+        const isLastStep = (currentStepIndex === totalSteps - 1);
+        let html = `
+            <div class="step-progress">
+                <div class="step-badge">第 <span>${stepNumber}</span> / ${totalSteps} 步</div>
+                <div class="step-badge">${step.title}</div>
+            </div>
+            <div class="step-card">
+                <div class="step-title">${step.title}</div>
+                <div id="stepFieldsContainer"></div>
+                <div class="button-group">
+                    <button type="button" id="prevBtn" class="btn-outline" ${currentStepIndex === 0 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>← 上一步</button>
+                    <button type="button" id="nextBtn" class="btn-dark">${isLastStep ? '生成专属方案 ✓' : '继续 →'}</button>
+                </div>
+            </div>
+        `;
+        stepsContainer.innerHTML = html;
+        const fieldsContainer = document.getElementById('stepFieldsContainer');
+        renderStepFields(step.id, fieldsContainer);
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        if (prevBtn && currentStepIndex !== 0) {
+            prevBtn.addEventListener('click', () => {
+                captureCurrentStepData(step.id);
+                currentStepIndex--;
+                renderCurrentStep();
+            });
+        }
+        nextBtn.addEventListener('click', () => {
+            captureCurrentStepData(step.id);
+            if (!validateStepData(step.id)) {
+                alert('请完整填写当前步骤信息');
+                return;
+            }
+            if (isLastStep) {
+                // 最后一步：调用AI生成方案
+                showAIPlanResult();
+            } else {
+                currentStepIndex++;
+                renderCurrentStep();
+            }
+        });
+    }
+
+    function renderStepFields(stepId, container) {
+        let fieldsHtml = '';
+        switch (stepId) {
+            case 'basic':
+                fieldsHtml = `
+                    <div class="inline-row">
+                        <div class="form-group"><label class="form-label">出生日期</label><input type="date" id="birth" value="${userData.birth || ''}"></div>
+                        <div class="form-group"><label class="form-label">性别</label><select id="gender"><option value="">请选择</option><option value="男" ${userData.gender === '男' ? 'selected' : ''}>男</option><option value="女" ${userData.gender === '女' ? 'selected' : ''}>女</option><option value="不愿透露" ${userData.gender === '不愿透露' ? 'selected' : ''}>不愿透露</option></select></div>
+                    </div>
+                    <div class="inline-row"><div class="form-group"><label class="form-label">身高 (cm)</label><input type="number" id="height" value="${userData.height || ''}" placeholder="厘米"></div>
+                    <div class="form-group"><label class="form-label">体重 (kg)</label><input type="number" id="weight" value="${userData.weight || ''}" placeholder="公斤"></div></div>
+                `;
+                break;
+            case 'injury':
+                const injuryOptions = ['膝盖', '腰部'];
+                const selectedInjuries = userData.injury || [];
+                const noInjuryChecked = selectedInjuries.includes('不存在伤病困扰');
+                fieldsHtml = `<div class="form-label">选择伤病部位（可多选）</div><div class="options-grid">`;
+                injuryOptions.forEach(opt => {
+                    const isChecked = selectedInjuries.includes(opt);
+                    fieldsHtml += `<div class="option-item"><input type="checkbox" value="${opt}" id="injury_${opt}" ${isChecked ? 'checked' : ''} ${noInjuryChecked ? 'disabled' : ''}><label for="injury_${opt}">${opt}</label></div>`;
+                });
+                fieldsHtml += `<div class="option-item"><input type="checkbox" value="不存在伤病困扰" id="injury_none" ${noInjuryChecked ? 'checked' : ''}><label for="injury_none">不存在伤病困扰</label></div></div><div class="small-note">*选择“不存在伤病困扰”将忽略其他部位</div>`;
+                break;
+            case 'bodytype':
+                const bodyTypes = ['直筒型', '梨型', '沙漏型', '苹果型'];
+                fieldsHtml = `<div class="options-grid">${bodyTypes.map(t => `<div class="option-item"><input type="radio" name="bodyType" value="${t}" id="body_${t}" ${userData.bodyType === t ? 'checked' : ''}><label for="body_${t}">${t}</label></div>`).join('')}</div>`;
+                break;
+            case 'goal':
+                const goals = ['瘦身减重', '塑形 / 增肌', '保持健康'];
+                fieldsHtml = `<div class="options-grid">${goals.map(g => `<div class="option-item"><input type="radio" name="fitnessGoal" value="${g}" id="goal_${g}" ${userData.fitnessGoal === g ? 'checked' : ''}><label for="goal_${g}">${g}</label></div>`).join('')}</div>`;
+                break;
+            case 'focus':
+                const areas = ['肩臂', '胸部', '腰腹', '臀腿', '全身'];
+                fieldsHtml = `<div class="options-grid">${areas.map(a => `<div class="option-item"><input type="radio" name="focusArea" value="${a}" id="focus_${a}" ${userData.focusArea === a ? 'checked' : ''}><label for="focus_${a}">${a}</label></div>`).join('')}</div>`;
+                break;
+            case 'extraSports':
+                const sports = ['操课', '跳绳', '跑步'];
+                const selectedSports = userData.extraSports || [];
+                const noneSelected = selectedSports.includes('以上都不需要');
+                fieldsHtml = `<div class="form-label">可多选</div><div class="options-grid">${sports.map(s => `<div class="option-item"><input type="checkbox" value="${s}" id="sport_${s}" ${selectedSports.includes(s) ? 'checked' : ''} ${noneSelected ? 'disabled' : ''}><label for="sport_${s}">${s}</label></div>`).join('')}<div class="option-item"><input type="checkbox" value="以上都不需要" id="sport_none" ${noneSelected ? 'checked' : ''}><label for="sport_none">以上都不需要</label></div></div>`;
+                break;
+            case 'duration':
+                const durations = ['20分钟左右', '30分钟左右', '40分钟左右'];
+                fieldsHtml = `<div class="options-grid">${durations.map(d => `<div class="option-item"><input type="radio" name="duration" value="${d}" id="dur_${d}" ${userData.duration === d ? 'checked' : ''}><label for="dur_${d}">${d}</label></div>`).join('')}</div>`;
+                break;
+            case 'planReq':
+                const reqs = ['零噪音', '无跳跃', '小场地'];
+                const selectedReqs = userData.planRequirements || [];
+                const noneReqSelected = selectedReqs.includes('没有以上要求');
+                fieldsHtml = `<div class="options-grid">${reqs.map(r => `<div class="option-item"><input type="checkbox" value="${r}" id="req_${r}" ${selectedReqs.includes(r) ? 'checked' : ''} ${noneReqSelected ? 'disabled' : ''}><label for="req_${r}">${r}</label></div>`).join('')}<div class="option-item"><input type="checkbox" value="没有以上要求" id="req_none" ${noneReqSelected ? 'checked' : ''}><label for="req_none">没有以上要求</label></div></div>`;
+                break;
+            case 'equipment':
+                const equipments = ['哑铃', '弹力带'];
+                const selectedEq = userData.equipment || [];
+                const noneEqSelected = selectedEq.includes('以上都不使用');
+                fieldsHtml = `<div class="options-grid">${equipments.map(e => `<div class="option-item"><input type="checkbox" value="${e}" id="eq_${e}" ${selectedEq.includes(e) ? 'checked' : ''} ${noneEqSelected ? 'disabled' : ''}><label for="eq_${e}">${e}</label></div>`).join('')}<div class="option-item"><input type="checkbox" value="以上都不使用" id="eq_none" ${noneEqSelected ? 'checked' : ''}><label for="eq_none">以上都不使用</label></div></div>`;
+                break;
+            case 'avoidMoves':
+                const moves = ['俯卧撑类', '波比类'];
+                const selectedMoves = userData.avoidMoves || [];
+                const noneMoveSelected = selectedMoves.includes('以上都能接受');
+                fieldsHtml = `<div class="options-grid">${moves.map(m => `<div class="option-item"><input type="checkbox" value="${m}" id="mv_${m}" ${selectedMoves.includes(m) ? 'checked' : ''} ${noneMoveSelected ? 'disabled' : ''}><label for="mv_${m}">${m}</label></div>`).join('')}<div class="option-item"><input type="checkbox" value="以上都能接受" id="mv_none" ${noneMoveSelected ? 'checked' : ''}><label for="mv_none">以上都能接受</label></div></div>`;
+                break;
+            case 'pushup':
+                fieldsHtml = renderRadioGroup('pushupAbility', ['从来没试过，或 1个也做不了', '10个以内', '10-20个', '20-30个', '30个以上'], userData.pushupAbility);
+                break;
+            case 'squat':
+                fieldsHtml = renderRadioGroup('squatAbility', ['从来没试过，或 1个也做不了', '10个以内', '10-20个', '20-30个', '30个以上'], userData.squatAbility);
+                break;
+            case 'curl':
+                fieldsHtml = renderRadioGroup('curlAbility', ['从来没试过，或 10个以内', '10-20个', '20-30个', '30-40个', '40个以上'], userData.curlAbility);
+                break;
+            case 'stamina':
+                fieldsHtml = renderRadioGroup('stairStamina', ['很累，甚至有点喘不过气', '比较累，呼吸也比较局促', '呼吸有点局促，但可以很快恢复', '几乎没有感觉', '非常轻松，完全没有感觉'], userData.stairStamina);
+                break;
+            default: break;
+        }
+        container.innerHTML = fieldsHtml;
+        if (stepId === 'injury') attachInjuryLogic();
+        if (stepId === 'extraSports') attachCheckboxNoneLogic('sport_none', '.option-item input[type="checkbox"]:not(#sport_none)');
+        if (stepId === 'planReq') attachCheckboxNoneLogic('req_none', '.option-item input[type="checkbox"]:not(#req_none)');
+        if (stepId === 'equipment') attachCheckboxNoneLogic('eq_none', '.option-item input[type="checkbox"]:not(#eq_none)');
+        if (stepId === 'avoidMoves') attachCheckboxNoneLogic('mv_none', '.option-item input[type="checkbox"]:not(#mv_none)');
+    }
+
+    function renderRadioGroup(name, options, currentValue) {
+        return `<div class="options-grid">${options.map(opt => `<div class="option-item"><input type="radio" name="${name}" value="${opt}" id="${name}_${opt.replace(/\s/g, '')}" ${currentValue === opt ? 'checked' : ''}><label for="${name}_${opt.replace(/\s/g, '')}">${opt}</label></div>`).join('')}</div>`;
+    }
+
+    function captureCurrentStepData(stepId) {
+        if (stepId === 'basic') { 
+            userData.birth = document.getElementById('birth')?.value || ''; 
+            userData.gender = document.getElementById('gender')?.value || ''; 
+            userData.height = document.getElementById('height')?.value || ''; 
+            userData.weight = document.getElementById('weight')?.value || ''; 
+        } else if (stepId === 'injury') { 
+            userData.injury = Array.from(document.querySelectorAll('#stepFieldsContainer input[type="checkbox"]:checked')).map(cb => cb.value); 
+        } else if (stepId === 'bodytype') { 
+            const v = document.querySelector('input[name="bodyType"]:checked'); 
+            userData.bodyType = v ? v.value : ''; 
+        } else if (stepId === 'goal') { 
+            const v = document.querySelector('input[name="fitnessGoal"]:checked'); 
+            userData.fitnessGoal = v ? v.value : ''; 
+        } else if (stepId === 'focus') { 
+            const v = document.querySelector('input[name="focusArea"]:checked'); 
+            userData.focusArea = v ? v.value : ''; 
+        } else if (stepId === 'extraSports') { 
+            userData.extraSports = Array.from(document.querySelectorAll('#stepFieldsContainer input[type="checkbox"]:checked')).map(cb => cb.value); 
+        } else if (stepId === 'duration') { 
+            const v = document.querySelector('input[name="duration"]:checked'); 
+            userData.duration = v ? v.value : ''; 
+        } else if (stepId === 'planReq') { 
+            userData.planRequirements = Array.from(document.querySelectorAll('#stepFieldsContainer input[type="checkbox"]:checked')).map(cb => cb.value); 
+        } else if (stepId === 'equipment') { 
+            userData.equipment = Array.from(document.querySelectorAll('#stepFieldsContainer input[type="checkbox"]:checked')).map(cb => cb.value); 
+        } else if (stepId === 'avoidMoves') { 
+            userData.avoidMoves = Array.from(document.querySelectorAll('#stepFieldsContainer input[type="checkbox"]:checked')).map(cb => cb.value); 
+        } else if (stepId === 'pushup') { 
+            const v = document.querySelector('input[name="pushupAbility"]:checked'); 
+            userData.pushupAbility = v ? v.value : ''; 
+        } else if (stepId === 'squat') { 
+            const v = document.querySelector('input[name="squatAbility"]:checked'); 
+            userData.squatAbility = v ? v.value : ''; 
+        } else if (stepId === 'curl') { 
+            const v = document.querySelector('input[name="curlAbility"]:checked'); 
+            userData.curlAbility = v ? v.value : ''; 
+        } else if (stepId === 'stamina') { 
+            const v = document.querySelector('input[name="stairStamina"]:checked'); 
+            userData.stairStamina = v ? v.value : ''; 
+        }
+    }
+
+    function validateStepData(stepId) {
+        if (stepId === 'basic') return userData.birth && userData.gender && userData.height && userData.weight;
+        if (stepId === 'bodytype') return userData.bodyType !== '';
+        if (stepId === 'goal') return userData.fitnessGoal !== '';
+        if (stepId === 'focus') return userData.focusArea !== '';
+        if (stepId === 'duration') return userData.duration !== '';
+        if (stepId === 'pushup') return userData.pushupAbility !== '';
+        if (stepId === 'squat') return userData.squatAbility !== '';
+        if (stepId === 'curl') return userData.curlAbility !== '';
+        if (stepId === 'stamina') return userData.stairStamina !== '';
+        return true;
+    }
+
+    function attachInjuryLogic() {
+        const noneCheck = document.getElementById('injury_none');
+        const otherChecks = document.querySelectorAll('#stepFieldsContainer input[type="checkbox"]:not(#injury_none)');
+        if (noneCheck) noneCheck.addEventListener('change', (e) => { const isNone = e.target.checked; otherChecks.forEach(ch => { ch.checked = false; ch.disabled = isNone; }); });
+        otherChecks.forEach(ch => { ch.addEventListener('change', () => { if (ch.checked && noneCheck) noneCheck.checked = false; if (noneCheck) noneCheck.disabled = false; }); });
+    }
+
+    function attachCheckboxNoneLogic(noneId, otherSelector) {
+        const noneCheck = document.getElementById(noneId);
+        if (!noneCheck) return;
+        const otherChecks = document.querySelectorAll(otherSelector);
+        noneCheck.addEventListener('change', (e) => { const isNone = e.target.checked; otherChecks.forEach(ch => { ch.checked = false; ch.disabled = isNone; }); });
+        otherChecks.forEach(ch => { ch.addEventListener('change', () => { if (ch.checked && noneCheck) noneCheck.checked = false; if (noneCheck) noneCheck.disabled = false; }); });
+    }
+
+    // 继续按钮：保存档案并跳转
+    document.addEventListener('click', async (e) => {
+        if (e.target.id === 'continueBtn') {
+            if (!currentUser) {
+                alert('请先登录以保存档案并前往个人中心');
+                showModal();
+                return;
+            }
+            // 保存档案
+            if (currentPlanSummary) {
+                const saved = await savePlanToProfile(currentUser.id, currentPlanSummary);
+                if (saved) {
+                    alert('方案已保存到个人档案！');
+                    window.location.href = 'profile.html';
+                } else {
+                    alert('保存失败，请重试');
+                }
+            } else {
+                alert('方案数据异常，请重新生成');
+            }
+        }
+    });
+
+    // 导航菜单点击（避免默认行为，但保留链接跳转）
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            // 允许跳转，不做额外处理
+        });
+    });
+
+    // 初始化
+    restoreSession();
+    renderCurrentStep();
+</script>
+</body>
+</html>
